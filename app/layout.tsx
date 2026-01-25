@@ -15,8 +15,28 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  title: "Valentine - Mischievous Invitations",
-  description: "Beautiful, playful, and secure invitations for your special someone.",
+  title: {
+    default: "Valentine - Mischievous Invitations",
+    template: "%s | Valentine",
+  },
+  description: "Beautiful, playful, and secure invitations with a mischievous twist. Perfect for your special someone.",
+  openGraph: {
+    title: "Valentine - Mischievous Invitations",
+    description: "Beautiful, playful, and secure invitations for your special someone.",
+    url: "https://valentine.app",
+    siteName: "Valentine",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Valentine - Mischievous Invitations",
+    description: "Invitations with a mischievous twist.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
