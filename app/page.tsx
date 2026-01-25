@@ -67,8 +67,8 @@ export default function Home() {
               </div>
               <div className="space-y-2 group">
                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold transition-transform group-hover:scale-110">3</div>
-                <h4 className="font-bold text-sm sm:text-base">The &quot;No&quot; Game</h4>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">The more they say no, the harder it gets to resist.</p>
+                <h4 className="font-bold text-sm sm:text-base">Persistence Pays Off</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Design an experience that gently nudges them towards the right answer.</p>
               </div>
               <div className="space-y-2 group">
                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold transition-transform group-hover:scale-110">4</div>

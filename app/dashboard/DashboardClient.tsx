@@ -12,6 +12,7 @@ interface Response {
     id: string
     answer: "yes" | "no" | "maybe"
     invite_id: string
+    reason?: string | null
     created_at: string
 }
 
@@ -86,11 +87,17 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                 // If it's private, the max expected no's is 3. 
                 const struggleIndex = Math.min(Math.round((noCount / 3) * 100), 100)
                 const struggleLabel = struggleIndex > 75 ? "Resilient" : struggleIndex > 40 ? "Hesitant" : struggleIndex > 0 ? "Playful" : "Instant Yes!"
+                const hasFeedback = invite.responses?.some(r => !!r.reason)
 
                 return (
                     <Card key={invite.id} className="flex flex-col relative overflow-hidden group border-primary/10 hover:border-primary/30 transition-all duration-300">
                         {/* Status Pulse for Realtime Feeling */}
-                        <div className="absolute top-0 right-0 p-3">
+                        <div className="absolute top-0 right-0 p-3 flex gap-2 items-center">
+                            {hasFeedback && (
+                                <span className="flex h-5 items-center rounded-full bg-primary/10 px-2 text-[8px] font-bold uppercase tracking-wider text-primary">
+                                    New Feedback
+                                </span>
+                            )}
                             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" title="Live Updates Active" />
                         </div>
 

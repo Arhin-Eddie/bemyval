@@ -12,6 +12,7 @@ interface Props {
 interface DetailedResponse {
     id: string
     answer: string
+    reason?: string | null
     created_at: string
     profiles?: { display_name: string | null }
 }
@@ -90,6 +91,11 @@ export default async function ResultPage({ params }: Props) {
                                             <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground font-medium">
                                                 {new Date(res.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(res.created_at).toLocaleDateString()}
                                             </p>
+                                            {res.reason && (
+                                                <div className="mt-3 p-3 rounded-xl bg-red-50/50 border border-red-100/50 text-xs text-red-600 italic">
+                                                    &quot;{res.reason}&quot;
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 

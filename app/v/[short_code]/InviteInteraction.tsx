@@ -28,6 +28,8 @@ export function InviteInteraction({ invite }: Props) {
     const [anonId, setAnonId] = useState<string | null>(null)
     const [submitted, setSubmitted] = useState(false)
     const [submissionError, setSubmissionError] = useState<string | null>(null)
+    const [reason, setReason] = useState("")
+    const [showReasonInput, setShowReasonInput] = useState(false)
     const supabase = createClient()
 
     useEffect(() => {
@@ -66,7 +68,7 @@ export function InviteInteraction({ invite }: Props) {
         checkLock(id)
     }, [invite.id, invite.device_token, supabase])
 
-    const handleResponse = async (answer: 'yes' | 'no' | 'maybe') => {
+    const handleResponse = async (answer: 'yes' | 'no' | 'maybe', providedReason?: string) => {
         if (!anonId || loading) return
         setLoading(true)
         setSubmissionError(null)
@@ -78,7 +80,8 @@ export function InviteInteraction({ invite }: Props) {
                 p_invite_id: invite.id,
                 p_device_token: anonId,
                 p_answer: answer,
-                p_responder_id: user?.id || null
+                p_responder_id: user?.id || null,
+                p_reason: providedReason || null
             })
 
             if (error || !success) throw new Error("Submission failed")
@@ -106,12 +109,22 @@ export function InviteInteraction({ invite }: Props) {
     }
 
     const handleNoClick = async () => {
-        // Send the "no" response to the database immediately for tracking
-        await handleResponse('no')
-
         if (noCount < 3) {
+            // Send the "no" response to the database immediately for tracking
+            await handleResponse('no')
             setNoCount(prev => prev + 1)
+        } else {
+            setShowReasonInput(true)
         }
+    }
+
+    const handleSubmitReason = async () => {
+        if (!reason.trim()) {
+            setSubmissionError("Please provide a reason or press 'Yes' instead! 💖")
+            return
+        }
+        await handleResponse('no', reason)
+        setSubmitted(true)
     }
 
     if (!invite.is_public && isLockedByMe === false) {
@@ -211,6 +224,36 @@ export function InviteInteraction({ invite }: Props) {
                                     {noButtonTexts[noCount]}
                                 </Button>
                             </div>
+
+                            <AnimatePresence>
+                                {showReasonInput && !submitted && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="w-full space-y-4 pt-4 border-t border-primary/10 mt-4"
+                                    >
+                                        <p className="text-xs font-semibold text-muted-foreground italic">
+                                            Persistent, aren&apos;t we? Tell {invite.profiles?.display_name || "the sender"} why:
+                                        </p>
+                                        <textarea
+                                            value={reason}
+                                            onChange={(e) => setReason(e.target.value)}
+                                            placeholder="Your reason..."
+                                            className="w-full min-h-[100px] rounded-2xl border border-input bg-white/50 px-4 py-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all resize-none"
+                                        />
+                                        <Button
+                                            size="lg"
+                                            variant="primary"
+                                            className="w-full sm:py-4"
+                                            onClick={handleSubmitReason}
+                                            loading={loading}
+                                        >
+                                            Submit Final Answer
+                                        </Button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
                             {submissionError && (
                                 <motion.p

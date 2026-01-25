@@ -63,6 +63,7 @@ create table responses (
   device_token uuid not null, -- Standardized naming: device_token
   responder_id uuid references profiles(id), -- New: link to profile if user is logged in
   answer text check (answer in ('yes', 'no', 'maybe')),
+  reason text, -- Capture feedback for 'no' answers
   created_at timestamptz default now()
 );
 
@@ -128,7 +129,8 @@ create or replace function submit_response(
   p_invite_id uuid,
   p_device_token uuid,
   p_answer text,
-  p_responder_id uuid default null -- Optional: capture responder identity
+  p_responder_id uuid default null, -- Optional: capture responder identity
+  p_reason text default null -- NEW: capture reason for 'no'
 )
 returns boolean
 language plpgsql
@@ -148,8 +150,8 @@ begin
   select is_public into v_is_public from invites where id = p_invite_id;
 
   -- Insert response
-  insert into responses (invite_id, device_token, answer, responder_id)
-  values (p_invite_id, p_device_token, p_answer, p_responder_id);
+  insert into responses (invite_id, device_token, answer, responder_id, reason)
+  values (p_invite_id, p_device_token, p_answer, p_responder_id, p_reason);
 
   -- Only mark as responded if it's a final positive/maybe answer AND it's not a public invite
   if not v_is_public and p_answer in ('yes', 'maybe') then
