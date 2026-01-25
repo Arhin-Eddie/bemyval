@@ -34,7 +34,7 @@ export default async function ResultPage({ params }: Props) {
     const responses = invite.responses || []
 
     return (
-        <main className="min-h-screen bg-background p-4 sm:p-8">
+        <main className="min-h-screen p-4 sm:p-8">
             <div className="mx-auto max-w-4xl">
                 <Link href="/dashboard" className="mb-6 inline-flex items-center text-sm font-medium text-primary hover:underline">
                     <ArrowLeft className="mr-2 h-4 w-4" />

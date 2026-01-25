@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "./ui/Button"
 import { Check, Copy, Share2 } from "lucide-react"
 
@@ -10,6 +10,11 @@ interface CopyLinkButtonProps {
 
 export function CopyLinkButton({ url }: CopyLinkButtonProps) {
     const [copied, setCopied] = useState(false)
+    const [canShare, setCanShare] = useState(false)
+
+    useEffect(() => {
+        setCanShare(typeof navigator !== 'undefined' && !!navigator.share)
+    }, [])
 
     const copyToClipboard = async () => {
         try {
@@ -56,7 +61,7 @@ export function CopyLinkButton({ url }: CopyLinkButtonProps) {
                     </>
                 )}
             </Button>
-            {typeof navigator !== 'undefined' && !!navigator.share && (
+            {canShare && (
                 <Button
                     variant="outline"
                     className="aspect-square p-0 w-10 h-10"

@@ -147,7 +147,7 @@ export function InviteInteraction({ invite }: Props) {
     const yesScale = 1 + (noCount * 0.2)
 
     return (
-        <main className="flex min-h-screen items-center justify-center p-4 bg-background overflow-hidden">
+        <main className="flex min-h-screen items-center justify-center p-4 overflow-hidden">
             <AnimatePresence>
                 <Card className="max-w-md w-full text-center relative z-10 transition-all duration-500">
                     <motion.div

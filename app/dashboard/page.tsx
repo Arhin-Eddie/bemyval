@@ -17,7 +17,7 @@ export default async function DashboardPage() {
         .order("created_at", { ascending: false })
 
     return (
-        <main className="min-h-screen bg-background p-4 sm:p-8">
+        <main className="min-h-screen p-4 sm:p-8">
             <div className="mx-auto max-w-6xl">
                 <header className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                     <div>

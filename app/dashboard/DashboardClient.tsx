@@ -14,9 +14,11 @@ interface DashboardClientProps {
 
 export function DashboardClient({ initialInvites }: DashboardClientProps) {
     const [invites, setInvites] = useState(initialInvites)
+    const [mounted, setMounted] = useState(false)
     const supabase = createClient()
 
     useEffect(() => {
+        setMounted(true)
         // Subscribe to NEW responses
         const channel = supabase
             .channel('dashboard-responses')
@@ -82,7 +84,7 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                                 </span>
                             </div>
                             <span className="text-[10px] text-muted-foreground">
-                                {new Date(invite.created_at).toLocaleDateString()}
+                                {mounted ? new Date(invite.created_at).toLocaleDateString() : '...'}
                             </span>
                         </div>
 
