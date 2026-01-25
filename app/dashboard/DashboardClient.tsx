@@ -38,6 +38,7 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
     const [mounted, setMounted] = useState(false)
     const [deletingId, setDeletingId] = useState<string | null>(null)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [deleteError, setDeleteError] = useState<string | null>(null)
     const supabase = createClient()
 
     useEffect(() => {
@@ -83,6 +84,7 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
 
     const handleDelete = async (id: string) => {
         setIsDeleting(true)
+        setDeleteError(null)
         try {
             const { error } = await supabase
                 .from("invites")
@@ -95,6 +97,7 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
             setDeletingId(null)
         } catch (error) {
             console.error("Error deleting invite:", error)
+            setDeleteError("Failed to delete. Please check your database permissions.")
         } finally {
             setIsDeleting(false)
         }
@@ -228,6 +231,13 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                                     <p className="text-sm text-muted-foreground mb-6">
                                         This will hide the invitation from your dashboard and disable the link for anyone visiting it.
                                     </p>
+
+                                    {deleteError && (
+                                        <div className="mb-6 p-3 rounded-xl bg-red-50 text-red-600 text-xs font-medium">
+                                            {deleteError}
+                                        </div>
+                                    )}
+
                                     <div className="flex gap-3">
                                         <Button
                                             variant="ghost"

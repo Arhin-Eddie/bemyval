@@ -54,6 +54,9 @@ create policy "Creators can view their own invites" on invites
 create policy "Creators can create invites" on invites
   for insert with check (auth.uid() = creator_id);
 
+create policy "Creators can update their own invites" on invites
+  for update using (auth.uid() = creator_id);
+
 create policy "Anyone can view invite by short_code" on invites
   for select using (deleted_at is null);
 
