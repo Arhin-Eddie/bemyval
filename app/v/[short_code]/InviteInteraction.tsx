@@ -75,13 +75,11 @@ export function InviteInteraction({ invite }: Props) {
         setSubmissionError(null)
 
         try {
-            const { data: { user } } = await supabase.auth.getUser()
 
             const { data: success, error } = await supabase.rpc("submit_response", {
                 p_invite_id: invite.id,
                 p_device_token: anonId,
                 p_answer: answer,
-                p_responder_id: user?.id || null,
                 p_reason: providedReason || null
             })
 

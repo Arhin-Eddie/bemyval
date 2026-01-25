@@ -124,12 +124,11 @@ begin
 end;
 $$;
 
--- 5. FUNCTION: Submit Response
+-- 5. FUNCTION: Submit Response (SECURED)
 create or replace function submit_response(
   p_invite_id uuid,
   p_device_token uuid,
   p_answer text,
-  p_responder_id uuid default null, -- Optional: capture responder identity
   p_reason text default null -- NEW: capture reason for 'no'
 )
 returns boolean
@@ -139,7 +138,11 @@ as $$
 declare
   v_is_owner boolean;
   v_is_public boolean;
+  v_auth_id uuid;
 begin
+  -- Get actual authenticated user ID
+  v_auth_id := auth.uid();
+
   -- Ensure device owns the link
   v_is_owner := claim_invite_device(p_invite_id, p_device_token);
   
@@ -149,9 +152,9 @@ begin
 
   select is_public into v_is_public from invites where id = p_invite_id;
 
-  -- Insert response
+  -- Insert response with verified auth identity (v_auth_id)
   insert into responses (invite_id, device_token, answer, responder_id, reason)
-  values (p_invite_id, p_device_token, p_answer, p_responder_id, p_reason);
+  values (p_invite_id, p_device_token, p_answer, v_auth_id, p_reason);
 
   -- Only mark as responded if it's a final positive/maybe answer AND it's not a public invite
   if not v_is_public and p_answer in ('yes', 'maybe') then
