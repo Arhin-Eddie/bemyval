@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import confetti from "canvas-confetti"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
+import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { v4 as uuidv4 } from "uuid" // Need to install uuid
 
@@ -152,9 +153,21 @@ export function InviteInteraction({ invite }: Props) {
                     >
                         <h1 className="font-outfit text-4xl font-bold mb-4">💖</h1>
                         <h2 className="text-2xl font-bold text-foreground">Response Sent</h2>
-                        <p className="mt-2 text-muted-foreground">
+                        <p className="mt-2 text-muted-foreground leading-relaxed">
                             Your answer has been delivered to {invite.profiles?.display_name || "the sender"}.
                         </p>
+
+                        <div className="mt-8 pt-8 border-t border-primary/10">
+                            <h3 className="font-outfit text-xl font-bold text-foreground mb-2">Want to send your own?</h3>
+                            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                                Join the fun and create your own mischievous invitations for your loved ones.
+                            </p>
+                            <Link href="/">
+                                <Button variant="primary" className="w-full py-6">
+                                    Create My First Invite 🏹
+                                </Button>
+                            </Link>
+                        </div>
                     </motion.div>
                 </Card>
             </main>
