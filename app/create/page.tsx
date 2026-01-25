@@ -24,7 +24,11 @@ export default function CreateInvitePage() {
 
         try {
             const { data: { user } } = await supabase.auth.getUser()
-            if (!user) throw new Error("Unauthorized")
+            if (!user) throw new Error("You must be signed in to create an invitation.")
+
+            if (!recipientName.trim()) {
+                throw new Error("Please provide a name for your special someone.")
+            }
 
             const shortCode = nanoid(10)
 
@@ -43,7 +47,7 @@ export default function CreateInvitePage() {
             router.push(`/dashboard`)
             router.refresh()
         } catch (err) {
-            const message = err instanceof Error ? err.message : "Failed to create invitation"
+            const message = err instanceof Error ? err.message : "We couldn't create your invitation right now. Please try again."
             setError(message)
         } finally {
             setLoading(false)

@@ -27,6 +27,7 @@ export function InviteInteraction({ invite }: Props) {
     const [isLockedByMe, setIsLockedByMe] = useState<boolean | null>(null)
     const [anonId, setAnonId] = useState<string | null>(null)
     const [submitted, setSubmitted] = useState(false)
+    const [submissionError, setSubmissionError] = useState<string | null>(null)
     const supabase = createClient()
 
     useEffect(() => {
@@ -68,6 +69,7 @@ export function InviteInteraction({ invite }: Props) {
     const handleResponse = async (answer: 'yes' | 'no' | 'maybe') => {
         if (!anonId || loading) return
         setLoading(true)
+        setSubmissionError(null)
 
         try {
             const { data: { user } } = await supabase.auth.getUser()
@@ -96,7 +98,7 @@ export function InviteInteraction({ invite }: Props) {
             console.error(err)
             // Silently fail for "no" clicks during trolling to avoid annoying the user
             if (answer !== 'no') {
-                alert("Something went wrong. Please try again.")
+                setSubmissionError("We couldn't deliver your response. Please check your connection and try again.")
             }
         } finally {
             setLoading(false)
@@ -209,6 +211,16 @@ export function InviteInteraction({ invite }: Props) {
                                     {noButtonTexts[noCount]}
                                 </Button>
                             </div>
+
+                            {submissionError && (
+                                <motion.p
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="text-xs font-semibold text-red-500 mt-2"
+                                >
+                                    {submissionError}
+                                </motion.p>
+                            )}
                         </div>
                     </motion.div>
                 </Card>

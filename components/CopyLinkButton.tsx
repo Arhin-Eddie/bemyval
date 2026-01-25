@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "./ui/Button"
-import { Check, Copy, Share2 } from "lucide-react"
+import { Check, Copy, Share2, X } from "lucide-react"
 
 interface CopyLinkButtonProps {
     url: string
@@ -10,6 +10,7 @@ interface CopyLinkButtonProps {
 
 export function CopyLinkButton({ url }: CopyLinkButtonProps) {
     const [copied, setCopied] = useState(false)
+    const [failed, setFailed] = useState(false)
     const [canShare, setCanShare] = useState(false)
 
     useEffect(() => {
@@ -20,12 +21,15 @@ export function CopyLinkButton({ url }: CopyLinkButtonProps) {
     }, [])
 
     const copyToClipboard = async () => {
+        setFailed(false)
         try {
             await navigator.clipboard.writeText(url)
             setCopied(true)
             setTimeout(() => setCopied(false), 2000)
         } catch (err) {
             console.error("Failed to copy!", err)
+            setFailed(true)
+            setTimeout(() => setFailed(false), 3000)
         }
     }
 
@@ -56,6 +60,11 @@ export function CopyLinkButton({ url }: CopyLinkButtonProps) {
                     <>
                         <Check className="h-4 w-4" />
                         <span>Copied!</span>
+                    </>
+                ) : failed ? (
+                    <>
+                        <X className="h-4 w-4" />
+                        <span>Try again</span>
                     </>
                 ) : (
                     <>

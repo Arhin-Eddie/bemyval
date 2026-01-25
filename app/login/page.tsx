@@ -49,7 +49,20 @@ export default function LoginPage() {
             router.push("/dashboard")
             router.refresh()
         } catch (err) {
-            const message = err instanceof Error ? err.message : "An authentication error occurred"
+            let message = "An unexpected error occurred. Please try again."
+
+            if (err instanceof Error) {
+                const errMsg = err.message.toLowerCase()
+                if (errMsg.includes("invalid login credentials")) {
+                    message = "Invalid email or password. Please double-check and try again."
+                } else if (errMsg.includes("email not confirmed")) {
+                    message = "Please verify your email before signing in."
+                } else if (errMsg.includes("user already registered")) {
+                    message = "An account with this email already exists."
+                } else {
+                    message = err.message
+                }
+            }
             setError(message)
         } finally {
             setLoading(false)
