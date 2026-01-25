@@ -42,19 +42,20 @@ create table invites (
   responded boolean default false,
   device_token uuid, -- Standardized naming: device_token
   is_public boolean default false,
+  deleted_at timestamptz, -- NEW: support soft-delete
   created_at timestamptz default now()
 );
 
 alter table invites enable row level security;
 
 create policy "Creators can view their own invites" on invites
-  for select using (auth.uid() = creator_id);
+  for select using (auth.uid() = creator_id and deleted_at is null);
 
 create policy "Creators can create invites" on invites
   for insert with check (auth.uid() = creator_id);
 
 create policy "Anyone can view invite by short_code" on invites
-  for select using (true);
+  for select using (deleted_at is null);
 
 -- 3. RESPONSES Table
 create table responses (
