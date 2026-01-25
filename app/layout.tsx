@@ -14,8 +14,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Valentine | Send Elegant Invitations",
-  description: "A premium, mischievous way to ask your special someone to be your Valentine.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  title: "Valentine - Mischievous Invitations",
+  description: "Beautiful, playful, and secure invitations for your special someone.",
 };
 
 export default function RootLayout({
