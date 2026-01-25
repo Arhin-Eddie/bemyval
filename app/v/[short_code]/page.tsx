@@ -62,7 +62,7 @@ export default async function InvitePage({ params }: Props) {
     }
 
     // Get or set anon_id in cookies
-    let anon_id = cookieStore.get("anon_id")?.value
+    const anon_id = cookieStore.get("anon_id")?.value
     if (!anon_id) {
         // We'll let the client-side handle initial claim if not present in cookies yet,
         // or we could set it here if this wasn't a RSC. 

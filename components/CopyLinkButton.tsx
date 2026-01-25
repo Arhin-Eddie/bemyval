@@ -13,7 +13,10 @@ export function CopyLinkButton({ url }: CopyLinkButtonProps) {
     const [canShare, setCanShare] = useState(false)
 
     useEffect(() => {
-        setCanShare(typeof navigator !== 'undefined' && !!navigator.share)
+        const timeout = setTimeout(() => {
+            setCanShare(typeof navigator !== 'undefined' && !!navigator.share)
+        }, 0)
+        return () => clearTimeout(timeout)
     }, [])
 
     const copyToClipboard = async () => {

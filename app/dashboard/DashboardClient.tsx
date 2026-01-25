@@ -8,8 +8,25 @@ import { Button } from "@/components/ui/Button"
 import Link from "next/link"
 import { CopyLinkButton } from "@/components/CopyLinkButton"
 
+interface Response {
+    id: string
+    answer: "yes" | "no" | "maybe"
+    invite_id: string
+    created_at: string
+}
+
+interface Invite {
+    id: string
+    recipient_name: string
+    message: string
+    is_public: boolean
+    short_code: string
+    created_at: string
+    responses: Response[]
+}
+
 interface DashboardClientProps {
-    initialInvites: any[]
+    initialInvites: Invite[]
 }
 
 export function DashboardClient({ initialInvites }: DashboardClientProps) {
@@ -18,7 +35,13 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
     const supabase = createClient()
 
     useEffect(() => {
-        setMounted(true)
+        const timeout = setTimeout(() => {
+            setMounted(true)
+        }, 0)
+        return () => clearTimeout(timeout)
+    }, [])
+
+    useEffect(() => {
         // Subscribe to NEW responses
         const channel = supabase
             .channel('dashboard-responses')
@@ -37,7 +60,7 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                                 // Add the new response to this invite
                                 return {
                                     ...invite,
-                                    responses: [...(invite.responses || []), payload.new]
+                                    responses: [...((invite.responses || []) as Response[]), payload.new as Response]
                                 }
                             }
                             return invite
@@ -55,9 +78,9 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
     return (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {invites.map((invite) => {
-                const yesCount = invite.responses?.filter((r: any) => r.answer === "yes").length || 0
-                const maybeCount = invite.responses?.filter((r: any) => r.answer === "maybe").length || 0
-                const noCount = invite.responses?.filter((r: any) => r.answer === "no").length || 0
+                const yesCount = invite.responses?.filter((r) => r.answer === "yes").length || 0
+                const maybeCount = invite.responses?.filter((r) => r.answer === "maybe").length || 0
+                const noCount = invite.responses?.filter((r) => r.answer === "no").length || 0
 
                 // Calculate Struggle Index (0-100)
                 // If it's private, the max expected no's is 3. 
@@ -89,7 +112,7 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                         </div>
 
                         <p className="mb-6 flex-grow line-clamp-2 text-sm italic text-foreground/80 leading-relaxed">
-                            "{invite.message}"
+                            &quot;{invite.message}&quot;
                         </p>
 
                         {/* Struggle Index Bar */}

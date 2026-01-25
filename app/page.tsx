@@ -30,7 +30,7 @@ export default function Home() {
           </h1>
 
           <p className="mx-auto mt-4 sm:mt-6 max-w-xl text-base sm:text-xl text-muted-foreground leading-relaxed">
-            Ask your special someone in a way they won't forget.
+            Ask your special someone in a way they won&apos;t forget.
             Beautiful, playful, and strictly for one pair of eyes.
           </p>
 
@@ -67,7 +67,7 @@ export default function Home() {
               </div>
               <div className="space-y-2 group">
                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold transition-transform group-hover:scale-110">3</div>
-                <h4 className="font-bold text-sm sm:text-base">The "No" Game</h4>
+                <h4 className="font-bold text-sm sm:text-base">The &quot;No&quot; Game</h4>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">The more they say no, the harder it gets to resist.</p>
               </div>
               <div className="space-y-2 group">

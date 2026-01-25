@@ -7,14 +7,17 @@ export function HeartBackground() {
     const [hearts, setHearts] = useState<{ id: number; x: number; size: number; duration: number; delay: number }[]>([])
 
     useEffect(() => {
-        const newHearts = Array.from({ length: 20 }).map((_, i) => ({
-            id: i,
-            x: Math.random() * 100,
-            size: Math.random() * 20 + 10,
-            duration: Math.random() * 20 + 10,
-            delay: Math.random() * 20,
-        }))
-        setHearts(newHearts)
+        const timeout = setTimeout(() => {
+            const newHearts = Array.from({ length: 20 }).map((_, i) => ({
+                id: i,
+                x: Math.random() * 100,
+                size: Math.random() * 20 + 10,
+                duration: Math.random() * 20 + 10,
+                delay: Math.random() * 20,
+            }))
+            setHearts(newHearts)
+        }, 0)
+        return () => clearTimeout(timeout)
     }, [])
 
     return (

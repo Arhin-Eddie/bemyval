@@ -8,8 +8,17 @@ import { Card } from "@/components/ui/Card"
 import { createClient } from "@/lib/supabase/client"
 import { v4 as uuidv4 } from "uuid" // Need to install uuid
 
+interface Invite {
+    id: string
+    recipient_name: string
+    message: string
+    is_public: boolean
+    device_token: string | null
+    profiles?: { display_name: string }
+}
+
 interface Props {
-    invite: any
+    invite: Invite
 }
 
 export function InviteInteraction({ invite }: Props) {
@@ -110,7 +119,7 @@ export function InviteInteraction({ invite }: Props) {
                     <h1 className="font-outfit text-4xl font-bold mb-4">🕵️‍♂️</h1>
                     <h2 className="text-xl font-bold text-foreground">Tsk tsk...</h2>
                     <p className="mt-2 text-muted-foreground italic">
-                        "Nice try, but you're not the one this link was meant for. 💌"
+                        &quot;Nice try, but you&apos;re not the one this link was meant for. 💌&quot;
                     </p>
                 </Card>
             </main>

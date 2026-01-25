@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { Input } from "@/components/ui/Input"
@@ -43,8 +42,9 @@ export default function CreateInvitePage() {
 
             router.push(`/dashboard`)
             router.refresh()
-        } catch (err: any) {
-            setError(err.message || "Failed to create invitation")
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Failed to create invitation"
+            setError(message)
         } finally {
             setLoading(false)
         }

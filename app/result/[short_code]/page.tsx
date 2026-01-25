@@ -9,6 +9,13 @@ interface Props {
     params: Promise<{ short_code: string }>
 }
 
+interface DetailedResponse {
+    id: string
+    answer: string
+    created_at: string
+    profiles?: { display_name: string | null }
+}
+
 export default async function ResultPage({ params }: Props) {
     const { short_code } = await params
     const supabase = await createClient()
@@ -31,7 +38,7 @@ export default async function ResultPage({ params }: Props) {
         redirect("/dashboard")
     }
 
-    const responses = invite.responses || []
+    const responses = (invite.responses || []) as DetailedResponse[]
 
     return (
         <main className="min-h-screen p-4 sm:p-8">
@@ -49,7 +56,7 @@ export default async function ResultPage({ params }: Props) {
                         For: {invite.recipient_name}
                     </h1>
                     <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground italic leading-relaxed">
-                        "{invite.message}"
+                        &quot;{invite.message}&quot;
                     </p>
                 </header>
 
@@ -60,7 +67,7 @@ export default async function ResultPage({ params }: Props) {
 
                     {responses.length > 0 ? (
                         <div className="grid gap-4">
-                            {responses.map((res: any, idx: number) => (
+                            {responses.map((res, idx) => (
                                 <Card key={res.id} className="flex items-center justify-between p-4 sm:p-8 hover:transform hover:scale-[1.01] transition-all border-primary/5 hover:border-primary/20">
                                     <div className="flex items-center gap-3 sm:gap-6">
                                         <div className="relative">

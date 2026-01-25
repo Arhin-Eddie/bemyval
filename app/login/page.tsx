@@ -32,7 +32,7 @@ export default function LoginPage() {
                 })
                 if (error) throw error
             } else {
-                const { error: signUpError, data } = await supabase.auth.signUp({
+                const { error: signUpError } = await supabase.auth.signUp({
                     email,
                     password,
                     options: {
@@ -48,8 +48,9 @@ export default function LoginPage() {
             }
             router.push("/dashboard")
             router.refresh()
-        } catch (err: any) {
-            setError(err.message || "An authentication error occurred")
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "An authentication error occurred"
+            setError(message)
         } finally {
             setLoading(false)
         }
@@ -85,7 +86,7 @@ export default function LoginPage() {
                                 <div className="space-y-2">
                                     <h2 className="text-xl font-bold text-foreground">Check your email</h2>
                                     <p className="text-sm text-muted-foreground leading-relaxed">
-                                        We've sent a magic link to <span className="font-bold text-foreground">{email}</span>.
+                                        We&apos;ve sent a magic link to <span className="font-bold text-foreground">{email}</span>.
                                         Please confirm your email to start sending invites.
                                     </p>
                                 </div>
