@@ -99,7 +99,7 @@ export default async function Image() {
                             fontFamily: "Inter, sans-serif",
                         }}
                     >
-                        valentine.app
+                        bemyval-theta.vercel.app
                     </div>
                 </div>
 

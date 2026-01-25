@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Valentine - Mischievous Invitations",
     description: "Beautiful, playful, and secure invitations for your special someone.",
-    url: "https://valentine.app",
+    url: "https://bemyval-theta.vercel.app",
     siteName: "Valentine",
     locale: "en_US",
     type: "website",

@@ -118,7 +118,7 @@ export default async function ResultPage({ params }: Props) {
                         <p className="text-sm text-foreground mb-4">Send this to {invite.recipient_name} directly:</p>
                         <div className="flex items-center gap-2 overflow-hidden rounded-2xl border border-primary/20 bg-white/80 p-1 pl-4">
                             <code className="text-xs flex-1 truncate font-mono text-primary">
-                                {`${process.env.NEXT_PUBLIC_APP_URL || 'valentine.app'}/v/${invite.short_code}`}
+                                {`${process.env.NEXT_PUBLIC_APP_URL || 'https://bemyval-theta.vercel.app'}/v/${invite.short_code}`}
                             </code>
                             <Button size="sm" variant="primary" className="rounded-xl">
                                 Copy
