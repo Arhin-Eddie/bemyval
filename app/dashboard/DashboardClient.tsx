@@ -33,6 +33,59 @@ interface DashboardClientProps {
     initialInvites: Invite[]
 }
 
+const ROMANTIC_PALETTES = [
+    {
+        name: "Rose",
+        primary: "text-primary",
+        bg: "bg-primary/10",
+        border: "border-primary/10",
+        hoverBorder: "hover:border-primary/30",
+        gradient: "from-primary to-accent",
+        badge: "bg-primary/10 text-primary",
+        accent: "primary"
+    },
+    {
+        name: "Lavender",
+        primary: "text-purple-600",
+        bg: "bg-purple-50",
+        border: "border-purple-100",
+        hoverBorder: "hover:border-purple-300",
+        gradient: "from-purple-500 to-indigo-500",
+        badge: "bg-purple-100 text-purple-600",
+        accent: "purple-600"
+    },
+    {
+        name: "Sunset",
+        primary: "text-orange-600",
+        bg: "bg-orange-50",
+        border: "border-orange-100",
+        hoverBorder: "hover:border-orange-300",
+        gradient: "from-orange-500 to-red-500",
+        badge: "bg-orange-100 text-orange-600",
+        accent: "orange-600"
+    },
+    {
+        name: "Emerald",
+        primary: "text-emerald-600",
+        bg: "bg-emerald-50",
+        border: "border-emerald-100",
+        hoverBorder: "hover:border-emerald-300",
+        gradient: "from-emerald-500 to-teal-500",
+        badge: "bg-emerald-100 text-emerald-600",
+        accent: "emerald-600"
+    },
+    {
+        name: "Amber",
+        primary: "text-amber-600",
+        bg: "bg-amber-50",
+        border: "border-amber-100",
+        hoverBorder: "hover:border-amber-300",
+        gradient: "from-amber-500 to-yellow-500",
+        badge: "bg-amber-100 text-amber-600",
+        accent: "amber-600"
+    }
+]
+
 export function DashboardClient({ initialInvites }: DashboardClientProps) {
     const [invites, setInvites] = useState(initialInvites)
     const [mounted, setMounted] = useState(false)
@@ -106,7 +159,8 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
     return (
         <>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {invites.map((invite) => {
+                {invites.map((invite, index) => {
+                    const palette = ROMANTIC_PALETTES[index % ROMANTIC_PALETTES.length]
                     const yesCount = invite.responses?.filter((r) => r.answer === "yes").length || 0
                     const maybeCount = invite.responses?.filter((r) => r.answer === "maybe").length || 0
                     const noCount = invite.responses?.filter((r) => r.answer === "no").length || 0
@@ -118,23 +172,23 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                     const hasFeedback = invite.responses?.some(r => !!r.reason)
 
                     return (
-                        <Card key={invite.id} className="flex flex-col relative overflow-hidden group border-primary/10 hover:border-primary/30 transition-all duration-300">
+                        <Card key={invite.id} className={`flex flex-col relative overflow-hidden group transition-all duration-300 border-2 ${palette.border} ${palette.hoverBorder}`}>
                             {/* Status Pulse for Realtime Feeling */}
                             <div className="absolute top-0 right-0 p-3 flex gap-2 items-center pointer-events-none">
                                 {hasFeedback && (
-                                    <span className="flex h-5 items-center rounded-full bg-primary/10 px-2 text-[8px] font-bold uppercase tracking-wider text-primary">
+                                    <span className={`flex h-5 items-center rounded-full px-2 text-[8px] font-bold uppercase tracking-wider ${palette.badge}`}>
                                         New Feedback
                                     </span>
                                 )}
                                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" title="Live Updates Active" />
                             </div>
 
-                            {/* Backdrop Gradient for Premium Feel */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                            {/* Backdrop Graduate for Premium Feel */}
+                            <div className={`absolute inset-0 bg-gradient-to-br ${palette.bg.replace('bg-', 'from-')}/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`} />
 
                             <div className="mb-4 flex items-center justify-between relative z-10">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                                    <span className={`text-xs font-semibold uppercase tracking-wider ${palette.primary}`}>
                                         {invite.recipient_name}
                                     </span>
                                     <span title={invite.is_public ? "Public Invitation" : "Private Invitation"}>
@@ -172,15 +226,15 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${struggleIndex}%` }}
-                                        className="h-full bg-gradient-to-r from-primary to-accent"
+                                        className={`h-full bg-gradient-to-r ${palette.gradient}`}
                                     />
                                 </div>
                             </div>
 
                             <div className="mb-6 grid grid-cols-3 gap-2 sm:gap-3">
-                                <div className="rounded-2xl bg-primary/10 p-2 sm:p-3 text-center transition-all hover:scale-105">
-                                    <div className="text-lg sm:text-xl font-bold text-primary">{yesCount}</div>
-                                    <div className="text-[9px] sm:text-[10px] uppercase font-medium text-primary/60">Yes</div>
+                                <div className={`rounded-2xl ${palette.bg} p-2 sm:p-3 text-center transition-all hover:scale-105`}>
+                                    <div className={`text-lg sm:text-xl font-bold ${palette.primary}`}>{yesCount}</div>
+                                    <div className={`text-[9px] sm:text-[10px] uppercase font-medium ${palette.primary} opacity-60`}>Yes</div>
                                 </div>
                                 <div className="rounded-2xl bg-secondary p-2 sm:p-3 text-center transition-all hover:scale-105">
                                     <div className="text-lg sm:text-xl font-bold text-secondary-foreground">{maybeCount}</div>
