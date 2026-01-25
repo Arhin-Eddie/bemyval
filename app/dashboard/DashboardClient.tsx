@@ -117,26 +117,19 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                     return (
                         <Card key={invite.id} className="flex flex-col relative overflow-hidden group border-primary/10 hover:border-primary/30 transition-all duration-300">
                             {/* Status Pulse for Realtime Feeling */}
-                            <div className="absolute top-0 right-0 p-3 flex gap-2 items-center">
+                            <div className="absolute top-0 right-0 p-3 flex gap-2 items-center pointer-events-none">
                                 {hasFeedback && (
                                     <span className="flex h-5 items-center rounded-full bg-primary/10 px-2 text-[8px] font-bold uppercase tracking-wider text-primary">
                                         New Feedback
                                     </span>
                                 )}
                                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" title="Live Updates Active" />
-                                <button
-                                    onClick={() => setDeletingId(invite.id)}
-                                    className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                    title="Delete Invitation"
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </button>
                             </div>
 
                             {/* Backdrop Gradient for Premium Feel */}
                             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
-                            <div className="mb-4 flex items-center justify-between">
+                            <div className="mb-4 flex items-center justify-between relative z-10">
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs font-semibold uppercase tracking-wider text-primary">
                                         {invite.recipient_name}
@@ -145,9 +138,21 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                                         {invite.is_public ? "🌍" : "🔒"}
                                     </span>
                                 </div>
-                                <span className="text-[10px] text-muted-foreground">
-                                    {mounted ? new Date(invite.created_at).toLocaleDateString() : '...'}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] text-muted-foreground">
+                                        {mounted ? new Date(invite.created_at).toLocaleDateString() : '...'}
+                                    </span>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setDeletingId(invite.id);
+                                        }}
+                                        className="p-1.5 -mr-1 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                        title="Delete Invitation"
+                                    >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                </div>
                             </div>
 
                             <p className="mb-6 flex-grow line-clamp-2 text-sm italic text-foreground/80 leading-relaxed">

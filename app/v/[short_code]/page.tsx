@@ -55,6 +55,7 @@ export default async function InvitePage({ params }: Props) {
         .from("invites")
         .select("*, profiles(display_name)")
         .eq("short_code", short_code)
+        .is("deleted_at", null)
         .single()
 
     if (!invite) {

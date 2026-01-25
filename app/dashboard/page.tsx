@@ -14,6 +14,7 @@ export default async function DashboardPage() {
         .from("invites")
         .select("*, responses(*, profiles!responder_id(display_name))")
         .eq("creator_id", user.id)
+        .is("deleted_at", null)
         .order("created_at", { ascending: false })
 
     return (

@@ -28,6 +28,7 @@ export default async function ResultPage({ params }: Props) {
         .from("invites")
         .select("*, responses(*, profiles!responder_id(display_name))")
         .eq("short_code", short_code)
+        .is("deleted_at", null)
         .single()
 
     if (error || !invite) {
