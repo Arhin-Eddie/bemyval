@@ -52,10 +52,10 @@ export default async function ResultPage({ params }: Props) {
 
                 <header className="mb-6 sm:mb-10">
                     <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary/60">
-                        Invite Details
+                        The Romantic Details
                     </span>
                     <h1 className="mt-1 sm:mt-2 font-outfit text-2xl sm:text-4xl font-bold tracking-tight text-foreground">
-                        For: {invite.recipient_name}
+                        Proposal to: {invite.recipient_name}
                     </h1>
                     <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground italic leading-relaxed">
                         &quot;{invite.message}&quot;
@@ -64,7 +64,7 @@ export default async function ResultPage({ params }: Props) {
 
                 <section className="space-y-6">
                     <h2 className="font-outfit text-xl font-bold text-foreground">
-                        Activity ({responses.length})
+                        The Story So Far ({responses.length})
                     </h2>
 
                     {responses.length > 0 ? (
@@ -108,15 +108,15 @@ export default async function ResultPage({ params }: Props) {
                         </div>
                     ) : (
                         <Card className="flex h-40 flex-col items-center justify-center text-center">
-                            <p className="text-muted-foreground italic">No responses yet. Wait for the magic to happen.</p>
+                            <p className="text-muted-foreground italic">No responses yet. Wait for the magic to unfold...</p>
                         </Card>
                     )}
                 </section>
 
                 <section className="mt-12">
                     <Card className="bg-primary/5 border-primary/20">
-                        <h3 className="font-bold text-primary italic mb-2">Share this Link</h3>
-                        <p className="text-sm text-foreground mb-4">Send this to {invite.recipient_name} directly:</p>
+                        <h3 className="font-bold text-primary italic mb-2">Share Your Heart</h3>
+                        <p className="text-sm text-foreground mb-4">Send this special link to {invite.recipient_name}:</p>
                         <div className="flex items-center gap-2 overflow-hidden rounded-2xl border border-primary/20 bg-white/80 p-1 pl-4">
                             <code className="text-xs flex-1 truncate font-mono text-primary">
                                 {`${process.env.NEXT_PUBLIC_APP_URL || 'https://bemyval-theta.vercel.app'}/v/${invite.short_code}`}
