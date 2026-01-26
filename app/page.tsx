@@ -2,87 +2,159 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: "easeOut" }
+}
+
+const stagger = {
+  animate: {
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+}
+
 export default function Home() {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-x-hidden px-4 py-12 sm:py-20">
-      {/* Background Decorative Elements - Subtle and non-blocking */}
-      <div className="absolute top-0 -z-10 h-full w-full bg-background/50 pointer-events-none">
-        <div className="absolute top-[-5%] left-[-10%] h-[20rem] sm:h-[50rem] w-[20rem] sm:w-[50rem] rounded-full bg-primary/5 blur-[80px] sm:blur-[120px]" />
-        <div className="absolute bottom-[-5%] right-[-10%] h-[20rem] sm:h-[50rem] w-[20rem] sm:w-[50rem] rounded-full bg-accent/5 blur-[80px] sm:blur-[120px]" />
-      </div>
+    <main className="min-h-screen bg-white overflow-x-hidden">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-md border-b border-gray-100 sm:px-12 sm:py-6">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">❤️</span>
+          <span className="font-outfit text-xl font-bold tracking-tighter uppercase">Valentine</span>
+        </div>
+        <Link href="/login">
+          <Button variant="ghost" size="sm" className="font-bold uppercase tracking-wider text-xs">Login</Button>
+        </Link>
+      </header>
 
-      <div className="container relative z-10 mx-auto max-w-4xl text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <span className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-[10px] sm:text-xs font-bold text-primary uppercase tracking-[0.2em]">
-            Valentines 2026
-          </span>
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-20 sm:pt-40 sm:pb-32 bg-dark-premium text-white overflow-hidden">
+        <div className="container mx-auto max-w-6xl px-6 relative z-10 flex flex-col items-center">
+          {/* Floating 3D Heart */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0, rotateY: 30 }}
+            animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="relative w-48 h-48 sm:w-80 sm:h-80 mb-8 sm:mb-12"
+          >
+            <Image
+              src="/hero-heart.png"
+              alt="3D Heart Centerpiece"
+              fill
+              className="object-contain drop-shadow-[0_20px_50px_rgba(219,39,119,0.3)]"
+              priority
+            />
+          </motion.div>
 
-          <h1 className="font-outfit text-3xl sm:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
-            Invitations with a <br />
-            <span className="text-primary italic text-3xl sm:text-7xl">mischievous</span> twist
-          </h1>
+          <motion.div
+            variants={stagger}
+            initial="initial"
+            animate="animate"
+            className="text-center"
+          >
+            <motion.span variants={fadeInUp} className="inline-block text-primary font-bold uppercase tracking-[0.3em] text-[10px] sm:text-xs mb-4">
+              Premium Hero Valentine
+            </motion.span>
+            <motion.h1 variants={fadeInUp} className="font-outfit text-4xl sm:text-7xl font-bold tracking-tight mb-6 leading-[1.05]">
+              Invitations with a <br />
+              <span className="text-primary italic">mischievous</span> twist.
+            </motion.h1>
+            <motion.p variants={fadeInUp} className="mx-auto max-w-2xl text-gray-400 text-base sm:text-lg mb-10 leading-relaxed">
+              Craft personalized, high-end Valentine's invites that tease, please, and leave them wanting more. No account required.
+            </motion.p>
+            <motion.div variants={fadeInUp}>
+              <Link href="/create">
+                <Button variant="primary" size="xl" className="group h-14 sm:h-16 px-10 rounded-full text-base sm:text-lg shadow-[0_10px_30px_rgba(219,39,119,0.4)]">
+                  Create Your Invite
+                  <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
 
-          <p className="mx-auto mt-4 sm:mt-6 max-w-xl text-base sm:text-xl text-muted-foreground leading-relaxed">
-            Ask your special someone in a way they won&apos;t forget.
-            Beautiful, playful, and strictly for one pair of eyes.
-          </p>
+        {/* Background Blobs */}
+        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-accent/20 rounded-full blur-[120px]" />
+      </section>
 
-          <div className="mt-8 sm:mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-6">
-            <Link href="/create" className="w-full sm:w-auto">
-              <Button size="xl" variant="primary" className="w-full sm:w-auto shadow-2xl">
-                Create Your Invite
-              </Button>
-            </Link>
-            <Link href="/login" className="w-full sm:w-auto">
-              <Button size="xl" variant="ghost" className="w-full sm:w-auto">
-                Sign In
-              </Button>
-            </Link>
-          </div>
-        </motion.div>
-
-        {/* Feature Preview Card */}
-        <div className="mt-16 sm:mt-24">
-          <Card className="mx-auto max-w-2xl text-left bg-white/40 ring-1 ring-primary/5">
-            <h3 className="font-outfit text-xl sm:text-2xl font-bold text-foreground">
-              How it works
-            </h3>
-            <div className="mt-6 sm:mt-8 grid gap-4 sm:gap-8 grid-cols-1 sm:grid-cols-2">
-              <div className="space-y-2 group">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold transition-transform group-hover:scale-110">1</div>
-                <h4 className="font-bold text-sm sm:text-base">Craft your message</h4>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Personalize your invite with a message that counts.</p>
-              </div>
-              <div className="space-y-2 group">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold transition-transform group-hover:scale-110">2</div>
-                <h4 className="font-bold text-sm sm:text-base">Secure Lock</h4>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Links are tied to the first person who opens them.</p>
-              </div>
-              <div className="space-y-2 group">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold transition-transform group-hover:scale-110">3</div>
-                <h4 className="font-bold text-sm sm:text-base">Persistence Pays Off</h4>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Design an experience that gently nudges them towards the right answer.</p>
-              </div>
-              <div className="space-y-2 group">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold transition-transform group-hover:scale-110">4</div>
-                <h4 className="font-bold text-sm sm:text-base">Live Results</h4>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Track their response in real-time from your dashboard.</p>
-              </div>
+      {/* Experience Section */}
+      <section className="py-24 sm:py-32 bg-white">
+        <div className="container mx-auto max-w-5xl px-6">
+          <header className="mb-16 flex items-end justify-between border-b border-gray-100 pb-8">
+            <div>
+              <h2 className="font-outfit text-3xl sm:text-4xl font-bold">The Experience</h2>
             </div>
+            <div className="text-primary font-bold uppercase tracking-widest text-xs">
+              3 Steps
+            </div>
+          </header>
+
+          <div className="grid gap-12 sm:grid-cols-3">
+            <div className="space-y-6">
+              <div className="h-14 w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary text-2xl shadow-inner">
+                🎨
+              </div>
+              <h3 className="text-xl font-bold">Craft</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
+                Design your unique message with our interactive creation flow. Pick a vibe that fits your plan.
+              </p>
+            </div>
+            <div className="space-y-6">
+              <div className="h-14 w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary text-2xl shadow-inner">
+                🔒
+              </div>
+              <h3 className="text-xl font-bold">Lock</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
+                Send the secure link. Our Mischievous Lock ensures only your special someone can open it.
+              </p>
+            </div>
+            <div className="space-y-6">
+              <div className="h-14 w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary text-2xl shadow-inner">
+                📊
+              </div>
+              <h3 className="text-xl font-bold">Track</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
+                Watch their struggle in real-time. See every "No" click and read their final response instantly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 sm:py-32 bg-[#fff1f2] border-t border-primary/5">
+        <div className="container mx-auto max-w-3xl px-6 text-center">
+          <Card className="p-12 sm:p-20 shadow-2xl bg-white/80 border-none">
+            <h2 className="font-outfit text-3xl sm:text-5xl font-bold mb-6">Ready to tease?</h2>
+            <p className="text-muted-foreground text-base sm:text-lg mb-10 leading-relaxed">
+              Start building your premium Valentine's experience today. No account required to start, just your creativity.
+            </p>
+            <Link href="/create">
+              <Button variant="primary" size="xl" className="w-full sm:w-auto h-16 px-12 rounded-full text-lg shadow-xl">
+                Start Designing
+              </Button>
+            </Link>
           </Card>
         </div>
-      </div>
+      </section>
 
-      {/* Subtle Footer */}
-      <footer className="mt-20 py-8 text-center text-sm text-muted-foreground">
-        &copy; 2026 Valentine. Designed for lovers.
+      {/* Footer */}
+      <footer className="py-12 bg-white border-t border-gray-50 uppercase tracking-[0.2em] text-[10px] sm:text-xs">
+        <div className="container mx-auto flex flex-col items-center justify-center gap-6 px-6 sm:flex-row sm:justify-between">
+          <p className="text-muted-foreground">© 2026 VALENTINE PREMIUM. ALL RIGHTS RESERVED.</p>
+          <div className="flex gap-8">
+            <Link href="/login" className="hover:text-primary transition-colors">LOGIN</Link>
+            <Link href="/create" className="hover:text-primary transition-colors">CREATE</Link>
+          </div>
+        </div>
       </footer>
     </main>
   )

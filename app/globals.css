@@ -69,6 +69,18 @@ body {
   background-size: 40px 40px;
 }
 
+.bg-dark-premium {
+  background: radial-gradient(circle at top, #1f2937 0%, #111827 100%);
+}
+
+.text-gradient-rose {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+}
+
+.glass-card {
+  @apply bg-white/40 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
 html {
   scroll-behavior: smooth;
 }
