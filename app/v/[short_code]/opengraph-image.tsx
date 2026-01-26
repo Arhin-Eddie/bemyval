@@ -15,11 +15,11 @@ export default async function Image({ params }: { params: { short_code: string }
 
     const { data: invite } = await supabase
         .from("invites")
-        .select("recipient_name, message")
+        .select("recipient_name, message, occasion")
         .eq("short_code", short_code)
         .single()
-
     const recipientName = invite?.recipient_name || "Someone Special"
+    const isSurprise = invite?.occasion === 'just_because'
 
     return new ImageResponse(
         (
@@ -37,8 +37,8 @@ export default async function Image({ params }: { params: { short_code: string }
                 }}
             >
                 {/* Decorative background elements */}
-                <div style={{ position: "absolute", top: -50, left: -50, fontSize: "100px", opacity: 0.1 }}>💖</div>
-                <div style={{ position: "absolute", bottom: -50, right: -50, fontSize: "100px", opacity: 0.1 }}>💖</div>
+                <div style={{ position: "absolute", top: -50, left: -50, fontSize: "100px", opacity: 0.1 }}>{isSurprise ? '🎁' : '💖'}</div>
+                <div style={{ position: "absolute", bottom: -50, right: -50, fontSize: "100px", opacity: 0.1 }}>{isSurprise ? '🎁' : '💖'}</div>
                 <div style={{ position: "absolute", top: 100, right: 100, fontSize: "60px", opacity: 0.1, transform: "rotate(15deg)" }}>✨</div>
                 <div style={{ position: "absolute", bottom: 100, left: 100, fontSize: "60px", opacity: 0.1, transform: "rotate(-15deg)" }}>✨</div>
 
@@ -68,7 +68,7 @@ export default async function Image({ params }: { params: { short_code: string }
                         zIndex: 10,
                     }}
                 >
-                    <div style={{ fontSize: "120px", marginBottom: "30px", filter: "drop-shadow(0 10px 10px rgba(0,0,0,0.1))" }}>💌</div>
+                    <div style={{ fontSize: "120px", marginBottom: "30px", filter: "drop-shadow(0 10px 10px rgba(0,0,0,0.1))" }}>{isSurprise ? '🎁' : '💌'}</div>
 
                     <div
                         style={{
@@ -82,7 +82,7 @@ export default async function Image({ params }: { params: { short_code: string }
                             textTransform: "uppercase",
                         }}
                     >
-                        Private Invitation
+                        {isSurprise ? 'A Special Surprise' : 'Private Invitation'}
                     </div>
 
                     <div
@@ -111,7 +111,7 @@ export default async function Image({ params }: { params: { short_code: string }
                             fontFamily: "Inter, sans-serif",
                         }}
                     >
-                        Open your message
+                        {isSurprise ? 'Tap to Unwrap' : 'Open your message'}
                     </div>
                 </div>
 

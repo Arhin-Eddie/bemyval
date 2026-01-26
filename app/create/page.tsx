@@ -2,24 +2,41 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { Input } from "@/components/ui/Input"
 import { createClient } from "@/lib/supabase/client"
-import { nanoid } from "nanoid" // Need to install nanoid
+import { nanoid } from "nanoid"
+
+// Wizard Steps
+const STEPS = [
+    { number: 1, title: "Function", label: "Select Occasion" },
+    { number: 2, title: "Aesthetic", label: "Choose Vibe" },
+    { number: 3, title: "Details", label: "Personalize" },
+    { number: 4, title: "Controls", label: "Privacy" },
+]
 
 export default function CreateInvitePage() {
-    const [recipientName, setRecipientName] = useState("")
-    const [message, setMessage] = useState("Will you be my Valentine?")
-    const [isPublic, setIsPublic] = useState(false)
+    const [step, setStep] = useState(1)
+
+    // Form Data
+    const [occasion, setOccasion] = useState("valentine")
     const [theme, setTheme] = useState("classic")
+    const [recipientName, setRecipientName] = useState("")
+    const [message, setMessage] = useState("Will you go out with me?")
+    const [isPublic, setIsPublic] = useState(false)
+
+    // UI State
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
     const supabase = createClient()
 
-    const handleCreate = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleNext = () => setStep(s => Math.min(s + 1, 4))
+    const handleBack = () => setStep(s => Math.max(s - 1, 1))
+
+    const handleCreate = async () => {
         setLoading(true)
         setError(null)
 
@@ -28,7 +45,9 @@ export default function CreateInvitePage() {
             if (!user) throw new Error("You must be signed in to create an invitation.")
 
             if (!recipientName.trim()) {
-                throw new Error("Please provide a name for your special someone.")
+                setError("Please provide a name for your special someone.")
+                setLoading(false)
+                return
             }
 
             const shortCode = nanoid(10)
@@ -42,6 +61,7 @@ export default function CreateInvitePage() {
                     recipient_name: recipientName,
                     is_public: isPublic,
                     theme: theme,
+                    occasion: occasion,
                 })
 
             if (inviteError) throw inviteError
@@ -49,113 +69,186 @@ export default function CreateInvitePage() {
             router.push(`/dashboard`)
             router.refresh()
         } catch (err) {
-            const message = err instanceof Error ? err.message : "We couldn't create your invitation right now. Please try again."
+            const message = err instanceof Error ? err.message : "We couldn't create your invitation right now."
             setError(message)
-        } finally {
             setLoading(false)
         }
     }
 
     return (
-        <main className="flex min-h-screen items-center justify-center px-4 py-12">
-            <div className="w-full max-w-lg">
-                <div className="mb-8 text-center uppercase tracking-[0.2em] text-primary/60 text-xs font-bold">
-                    New Invitation
+        <main className="flex min-h-screen items-center justify-center px-4 py-12 bg-gray-50/50">
+            <div className="w-full max-w-xl">
+                {/* Wizard Progress */}
+                <div className="mb-8 flex justify-between items-center px-2">
+                    {STEPS.map((s) => (
+                        <div key={s.number} className="flex flex-col items-center gap-2">
+                            <div className={`
+                                h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300
+                                ${step >= s.number ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-gray-200 text-gray-500'}
+                            `}>
+                                {s.number}
+                            </div>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider ${step >= s.number ? 'text-primary' : 'text-gray-400'}`}>
+                                {s.title}
+                            </span>
+                        </div>
+                    ))}
+                    {/* Progress Line Background */}
+                    <div className="absolute top-[3.25rem] left-[15%] right-[15%] h-[2px] bg-gray-200 -z-10" />
+                    {/* Active Progress Line */}
+                    {/* Using a simplified approach for the line to avoid complex width calculations in this MVP iteration */}
                 </div>
 
-                <Card>
-                    <form onSubmit={handleCreate} className="space-y-4 sm:space-y-6">
-                        <div>
-                            <label className="mb-1.5 sm:mb-2 block text-sm font-semibold text-foreground">
-                                Who is this for?
-                            </label>
-                            <Input
-                                placeholder="Recipient's Name"
-                                value={recipientName}
-                                onChange={(e) => setRecipientName(e.target.value)}
-                                required
-                            />
-                            <p className="mt-1.5 sm:mt-2 text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider">
-                                They will be the only person able to open this link.
-                            </p>
-                        </div>
+                <Card className="p-0 overflow-hidden border-2 border-primary/5 shadow-2xl">
+                    <div className="p-6 sm:p-10 bg-white min-h-[400px] flex flex-col relative">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={step}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.3 }}
+                                className="flex-1"
+                            >
+                                <h2 className="text-2xl font-bold font-outfit mb-2 text-foreground">{STEPS[step - 1].label}</h2>
+                                <p className="text-sm text-muted-foreground mb-8">Step {step} of 4</p>
 
-                        <div>
-                            <label className="mb-1.5 sm:mb-2 block text-sm font-semibold text-foreground">
-                                Your Message
-                            </label>
-                            <textarea
-                                className="flex min-h-[100px] sm:min-h-[120px] w-full rounded-2xl border border-input bg-white/50 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all"
-                                placeholder="Write something sweet or mischievous..."
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                required
-                            />
-                        </div>
+                                {/* Step 1: Occasion */}
+                                {step === 1 && (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {[
+                                            { id: 'valentine', icon: '🌹', label: 'Valentine' },
+                                            { id: 'date', icon: '🥂', label: 'Date Night' },
+                                            { id: 'anniversary', icon: '💑', label: 'Anniversary' },
+                                            { id: 'just_because', icon: '🎁', label: 'Surprise' }
+                                        ].map((occ) => (
+                                            <button
+                                                key={occ.id}
+                                                onClick={() => {
+                                                    setOccasion(occ.id)
+                                                    if (occ.id === 'just_because') {
+                                                        setMessage("Surprise! Open to see what's inside... 🎁")
+                                                    } else {
+                                                        setMessage("Will you go out with me?")
+                                                    }
+                                                }}
+                                                className={`p-4 rounded-xl border-2 text-left transition-all hover:scale-[1.02] ${occasion === occ.id ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-100 hover:border-primary/30'}`}
+                                            >
+                                                <div className="text-3xl mb-2">{occ.icon}</div>
+                                                <div className="font-bold text-sm text-foreground">{occ.label}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
 
-                        <div className="space-y-2 sm:space-y-3">
-                            <label className="block text-sm font-semibold text-foreground">
-                                Choose a Vibe
-                            </label>
-                            <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                                {[
-                                    { id: 'classic', icon: '💌', label: 'Classic', desc: 'Soft & Elegant' },
-                                    { id: 'rebel', icon: '⚡', label: 'Rebel', desc: 'Neon & Glitch' },
-                                    { id: 'heartbreaker', icon: '🖤', label: 'Heartbreaker', desc: 'Dark & Sarcastic' },
-                                ].map((t) => (
-                                    <button
-                                        key={t.id}
-                                        type="button"
-                                        onClick={() => setTheme(t.id)}
-                                        className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-2xl border-2 transition-all ${theme === t.id ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
-                                    >
-                                        <span className="text-xl sm:text-2xl mb-1">{t.icon}</span>
-                                        <span className="text-[10px] sm:text-xs font-bold leading-tight">{t.label}</span>
-                                        <span className="hidden sm:block text-[8px] text-muted-foreground mt-1 leading-tight">{t.desc}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                                {/* Step 2: Vibe */}
+                                {step === 2 && (
+                                    <div className="space-y-4">
+                                        {[
+                                            { id: 'classic', icon: '💌', label: 'The Classic', desc: 'Elegant, soft reds, timeless romance.' },
+                                            { id: 'rebel', icon: '⚡', label: 'The Rebel', desc: 'Neon, glitch effects, fast-paced fun.' },
+                                            { id: 'heartbreaker', icon: '🖤', label: 'The Heartbreaker', desc: 'Dark mode, sarcastic, moody.' },
+                                        ].map((t) => (
+                                            <button
+                                                key={t.id}
+                                                onClick={() => setTheme(t.id)}
+                                                className={`w-full p-4 rounded-xl border-2 flex items-center gap-4 transition-all hover:bg-gray-50 ${theme === t.id ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'border-gray-100'}`}
+                                            >
+                                                <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center text-2xl shadow-sm border border-gray-100">
+                                                    {t.icon}
+                                                </div>
+                                                <div className="text-left">
+                                                    <div className="font-bold text-foreground">{t.label}</div>
+                                                    <div className="text-xs text-muted-foreground">{t.desc}</div>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
 
-                        <div className="space-y-2 sm:space-y-3">
-                            <label className="block text-sm font-semibold text-foreground">
-                                Privacy Setting
-                            </label>
-                            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsPublic(false)}
-                                    className={`flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-2 transition-all ${!isPublic ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
-                                >
-                                    <span className="text-lg sm:text-xl mb-1">🔒</span>
-                                    <span className="text-xs sm:text-sm font-bold">Private</span>
-                                    <span className="text-[8px] sm:text-[10px] text-muted-foreground mt-0.5 sm:mt-1 leading-tight">First person only</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsPublic(true)}
-                                    className={`flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-2 transition-all ${isPublic ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
-                                >
-                                    <span className="text-lg sm:text-xl mb-1">🌍</span>
-                                    <span className="text-xs sm:text-sm font-bold">Public</span>
-                                    <span className="text-[8px] sm:text-[10px] text-muted-foreground mt-0.5 sm:mt-1 leading-tight">Open for many</span>
-                                </button>
-                            </div>
+                                {/* Step 3: Details */}
+                                {step === 3 && (
+                                    <div className="space-y-6">
+                                        <div>
+                                            <label className="block text-sm font-bold text-foreground mb-2">Who are you asking?</label>
+                                            <Input
+                                                value={recipientName}
+                                                onChange={(e) => setRecipientName(e.target.value)}
+                                                placeholder="e.g. Sarah, My Love, or 'Standard Deviation'"
+                                                className="h-12 text-lg"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-foreground mb-2">
+                                                {occasion === 'just_because' ? 'Your Surprise Message' : 'The Big Question'}
+                                            </label>
+                                            <textarea
+                                                value={message}
+                                                onChange={(e) => setMessage(e.target.value)}
+                                                placeholder={occasion === 'just_because'
+                                                    ? "Write a poem, a favorite quote, or a sweet note..."
+                                                    : "Will you go out with me?"
+                                                }
+                                                className="w-full h-32 rounded-xl border border-input bg-white p-4 text-base focus:ring-2 focus:ring-primary focus:outline-none resize-none"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Step 4: Settings */}
+                                {step === 4 && (
+                                    <div className="space-y-4">
+                                        <div
+                                            onClick={() => setIsPublic(false)}
+                                            className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${!isPublic ? 'border-primary bg-primary/5' : 'border-gray-100 opacity-60 hover:opacity-100'}`}
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="font-bold text-lg flex items-center gap-2">🔒 Private Lock <span className="text-[10px] bg-primary text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Recommended</span></span>
+                                                {!isPublic && <div className="h-4 w-4 rounded-full bg-primary" />}
+                                            </div>
+                                            <p className="text-sm text-foreground/80">Only the FIRST person to open the link can respond. Truly exclusive.</p>
+                                        </div>
+
+                                        <div
+                                            onClick={() => setIsPublic(true)}
+                                            className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${isPublic ? 'border-primary bg-primary/5' : 'border-gray-100 opacity-60 hover:opacity-100'}`}
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="font-bold text-lg">🌍 Public Open</span>
+                                                {isPublic && <div className="h-4 w-4 rounded-full bg-primary" />}
+                                            </div>
+                                            <p className="text-sm text-foreground/80">Anyone with the link can respond. Good for group polls or social media.</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
+
+                        {/* Navigation Actions */}
+                        <div className="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center">
+                            {step > 1 ? (
+                                <Button variant="ghost" onClick={handleBack}>Back</Button>
+                            ) : (
+                                <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
+                            )}
+
+                            {step < 4 ? (
+                                <Button variant="primary" onClick={handleNext} className="w-32">
+                                    Next Step
+                                </Button>
+                            ) : (
+                                <Button variant="primary" onClick={handleCreate} loading={loading} className="w-40 font-bold shadow-xl shadow-primary/30">
+                                    {loading ? 'Creating...' : 'Launch Invite 🚀'}
+                                </Button>
+                            )}
                         </div>
 
                         {error && (
-                            <p className="text-sm font-medium text-red-500">{error}</p>
+                            <div className="absolute bottom-4 left-0 right-0 text-center text-sm font-bold text-red-500 animate-pulse">
+                                {error}
+                            </div>
                         )}
-
-                        <div className="flex gap-4">
-                            <Button type="button" variant="ghost" className="flex-1" onClick={() => router.back()}>
-                                Cancel
-                            </Button>
-                            <Button type="submit" variant="primary" className="flex-[2]" loading={loading}>
-                                Generate Secure Link
-                            </Button>
-                        </div>
-                    </form>
+                    </div>
                 </Card>
             </div>
         </main>

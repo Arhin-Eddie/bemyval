@@ -70,7 +70,7 @@ export default async function Image() {
                             letterSpacing: "4px",
                         }}
                     >
-                        Valentine
+                        BeMine
                     </div>
 
                     <div
@@ -84,7 +84,7 @@ export default async function Image() {
                             lineHeight: 1.1,
                         }}
                     >
-                        Mischievous <br /> Invitations
+                        The OS for <br /> Romance
                     </div>
 
                     <div

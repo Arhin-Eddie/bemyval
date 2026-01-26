@@ -17,13 +17,13 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: {
-    default: "Valentine - Mischievous Invitations",
-    template: "%s | Valentine",
+    default: "BeMine - The OS for Romance",
+    template: "%s | BeMine",
   },
-  description: "Beautiful, playful, and secure invitations with a mischievous twist. Perfect for your special someone.",
+  description: "Beautiful, playful, and secure invitations for every romantic moment. Ask them out with a mischievous twist.",
   openGraph: {
-    title: "Valentine - Mischievous Invitations",
-    description: "Beautiful, playful, and secure invitations for your special someone.",
+    title: "BeMine - The OS for Romance",
+    description: "Beautiful, playful, and secure invitations for every romantic moment.",
     url: "https://bemyval-theta.vercel.app",
     siteName: "Valentine",
     locale: "en_US",

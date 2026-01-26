@@ -27,6 +27,7 @@ interface Invite {
     created_at: string
     responses: Response[]
     deleted_at: string | null
+    occasion?: string
 }
 
 interface DashboardClientProps {
@@ -86,8 +87,17 @@ const ROMANTIC_PALETTES = [
     }
 ]
 
+const OCCASIONS = [
+    { id: 'all', label: 'All Plans', icon: '💖' },
+    { id: 'valentine', label: 'Valentine', icon: '🌹' },
+    { id: 'date', label: 'Dates', icon: '🥂' },
+    { id: 'anniversary', label: 'Anniversary', icon: '💑' },
+    { id: 'just_because', label: 'Surprises', icon: '✨' },
+]
+
 export function DashboardClient({ initialInvites }: DashboardClientProps) {
     const [invites, setInvites] = useState(initialInvites)
+    const [filter, setFilter] = useState('all')
     const [mounted, setMounted] = useState(false)
     const [deletingId, setDeletingId] = useState<string | null>(null)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -156,10 +166,50 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
         }
     }
 
+    // Calculate Stats
+    const filteredInvites = filter === 'all'
+        ? invites
+        : invites.filter(i => (i.occasion || 'valentine') === filter)
+
+    const totalYes = invites.reduce((acc, inv) => acc + (inv.responses?.filter(r => r.answer === 'yes').length || 0), 0)
+    const totalResponses = invites.reduce((acc, inv) => acc + (inv.responses?.length || 0), 0)
+    const successRate = totalResponses > 0 ? Math.round((totalYes / totalResponses) * 100) : 0
+
     return (
         <>
+            {/* Stats Overview */}
+            <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <Card className="p-4 flex flex-col items-center justify-center bg-white border-primary/10">
+                    <span className="text-3xl font-bold text-primary">{successRate}%</span>
+                    <span className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Success Rate</span>
+                </Card>
+                <Card className="p-4 flex flex-col items-center justify-center bg-white border-primary/10">
+                    <span className="text-3xl font-bold text-foreground">{invites.length}</span>
+                    <span className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Total Plans</span>
+                </Card>
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="mb-6 sm:mb-8 flex overflow-x-auto pb-4 gap-2 no-scrollbar touch-pan-x -mx-4 px-4 sm:mx-0 sm:px-0">
+                {OCCASIONS.map((occ) => (
+                    <button
+                        key={occ.id}
+                        onClick={() => setFilter(occ.id)}
+                        className={`
+                            whitespace-nowrap flex-shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all
+                            ${filter === occ.id
+                                ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                                : 'bg-white text-muted-foreground hover:bg-gray-50 border border-gray-100'}
+                        `}
+                    >
+                        <span className="mr-2">{occ.icon}</span>
+                        {occ.label}
+                    </button>
+                ))}
+            </div>
+
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {invites.map((invite, index) => {
+                {filteredInvites.map((invite, index) => {
                     const palette = ROMANTIC_PALETTES[index % ROMANTIC_PALETTES.length]
                     const yesCount = invite.responses?.filter((r) => r.answer === "yes").length || 0
                     const maybeCount = invite.responses?.filter((r) => r.answer === "maybe").length || 0
@@ -211,6 +261,7 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                                     </button>
                                 </div>
                             </div>
+
 
                             <p className="mb-6 flex-grow line-clamp-2 text-sm italic text-foreground/80 leading-relaxed">
                                 &quot;{invite.message}&quot;

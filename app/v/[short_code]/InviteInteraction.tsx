@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import confetti from "canvas-confetti"
 import { Button } from "@/components/ui/Button"
@@ -17,6 +17,7 @@ interface Invite {
     device_token: string | null
     theme?: string
     profiles?: { display_name: string }
+    occasion?: string
 }
 
 interface Props {
@@ -32,6 +33,7 @@ export function InviteInteraction({ invite }: Props) {
     const [submissionError, setSubmissionError] = useState<string | null>(null)
     const [reason, setReason] = useState("")
     const [showReasonInput, setShowReasonInput] = useState(false)
+    const [isUnwrapped, setIsUnwrapped] = useState(false)
     const supabase = createClient()
 
     useEffect(() => {
@@ -196,7 +198,10 @@ export function InviteInteraction({ invite }: Props) {
                         <h1 className="font-outfit text-4xl font-bold mb-4">💖</h1>
                         <h2 className="text-2xl font-bold text-foreground">Response Sent</h2>
                         <p className="mt-2 text-muted-foreground leading-relaxed">
-                            Your answer has been delivered to {invite.profiles?.display_name || "the sender"}.
+                            {invite.occasion === 'just_because'
+                                ? `Your love has been sent to ${invite.profiles?.display_name || "the sender"}. ❤️`
+                                : `Your answer has been delivered to ${invite.profiles?.display_name || "the sender"}.`
+                            }
                         </p>
 
                         <div className="mt-8 pt-8 border-t border-primary/10">
@@ -218,6 +223,205 @@ export function InviteInteraction({ invite }: Props) {
 
     const yesScale = 1 + (noCount * config.yesScaleInc)
 
+    // Surprise Mode Interaction (Scratch Card)
+    if (invite.occasion === 'just_because') {
+        const scratchRef = useRef<HTMLCanvasElement>(null)
+        const [isScratching, setIsScratching] = useState(false)
+
+        useEffect(() => {
+            if (isUnwrapped || !scratchRef.current) return
+
+            const canvas = scratchRef.current
+            const ctx = canvas.getContext('2d')
+            if (!ctx) return
+
+            // Setup Canvas
+            const resize = () => {
+                const parent = canvas.parentElement
+                if (parent) {
+                    canvas.width = parent.offsetWidth
+                    canvas.height = parent.offsetHeight
+                    initCard(ctx, canvas.width, canvas.height)
+                }
+            }
+
+            const initCard = (context: CanvasRenderingContext2D, width: number, height: number) => {
+                context.fillStyle = '#C0C0C0' // Fallback
+
+                // Create fancy gradient
+                const gradient = context.createLinearGradient(0, 0, width, height)
+                gradient.addColorStop(0, '#e5e7eb')
+                gradient.addColorStop(0.2, '#9ca3af')
+                gradient.addColorStop(0.4, '#e5e7eb')
+                gradient.addColorStop(0.6, '#9ca3af')
+                gradient.addColorStop(0.8, '#d1d5db')
+                gradient.addColorStop(1, '#9ca3af')
+
+                context.fillStyle = gradient
+                context.fillRect(0, 0, width, height)
+
+                // Add text "Scratch Me"
+                context.font = 'bold 24px Arial'
+                context.fillStyle = '#4b5563'
+                context.textAlign = 'center'
+                context.textBaseline = 'middle'
+                context.fillText('✨ Scratch to Reveal ✨', width / 2, height / 2)
+            }
+
+            resize()
+            window.addEventListener('resize', resize)
+
+            // Scratch Logic
+            const scratch = (x: number, y: number) => {
+                ctx.globalCompositeOperation = 'destination-out'
+                ctx.beginPath()
+                ctx.arc(x, y, 30, 0, Math.PI * 2)
+                ctx.fill()
+
+                // Haptic feedback
+                if (navigator.vibrate) navigator.vibrate(5)
+            }
+
+            const handleStart = () => setIsScratching(true)
+            const handleEnd = () => {
+                setIsScratching(false)
+                checkReveal()
+            }
+
+            const handleMove = (e: MouseEvent | TouchEvent) => {
+                if (!isScratching) return
+                // Don't prevent default here to allow scrolling if needed, 
+                // but usually we want to prevent it on the canvas itself.
+                // e.preventDefault() 
+
+                const rect = canvas.getBoundingClientRect()
+                let clientX, clientY
+
+                if ('touches' in e) {
+                    clientX = e.touches[0].clientX
+                    clientY = e.touches[0].clientY
+                } else {
+                    clientX = (e as MouseEvent).clientX
+                    clientY = (e as MouseEvent).clientY
+                }
+
+                const x = clientX - rect.left
+                const y = clientY - rect.top
+
+                scratch(x, y)
+            }
+
+            // Check Reveal status by sampling pixels
+            const checkReveal = () => {
+                try {
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+                    const data = imageData.data
+                    let transparentPixels = 0
+
+                    // Sample every 40th pixel for performance (stride of 4 * 10)
+                    for (let i = 0; i < data.length; i += 40) {
+                        if (data[i + 3] === 0) transparentPixels++
+                    }
+
+                    const visualTotal = data.length / 40
+                    if (transparentPixels / visualTotal > 0.4) {
+                        handleUnwrap()
+                    }
+                } catch (e) {
+                    // Ignore cross-origin issues if any
+                }
+            }
+
+            canvas.addEventListener('mousedown', handleStart)
+            canvas.addEventListener('mousemove', handleMove)
+            canvas.addEventListener('mouseup', handleEnd)
+            canvas.addEventListener('touchstart', handleStart)
+            canvas.addEventListener('touchmove', handleMove)
+            canvas.addEventListener('touchend', handleEnd)
+
+            return () => {
+                window.removeEventListener('resize', resize)
+                canvas.removeEventListener('mousedown', handleStart)
+                canvas.removeEventListener('mousemove', handleMove)
+                canvas.removeEventListener('mouseup', handleEnd)
+                canvas.removeEventListener('touchstart', handleStart)
+                canvas.removeEventListener('touchmove', handleMove)
+                canvas.removeEventListener('touchend', handleEnd)
+            }
+
+        }, [isUnwrapped, isScratching])
+
+        const handleUnwrap = () => {
+            if (isUnwrapped) return
+            setIsUnwrapped(true)
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100])
+            confetti({
+                particleCount: 200,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: [...config.confetti]
+            })
+        }
+
+        return (
+            <main className={`flex min-h-screen items-center justify-center p-4 overflow-hidden transition-colors duration-1000 ${config.bg}`}>
+                <AnimatePresence>
+                    <Card className={`max-w-md w-full text-center relative z-10 transition-all duration-500 ${config.card} min-h-[400px] flex flex-col items-center justify-center overflow-hidden`}>
+                        {!isUnwrapped ? (
+                            <div className="relative w-full h-[400px] bg-white flex items-center justify-center rounded-xl p-6">
+                                {/* The "Hidden" Content underneath */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 opacity-50 blur-sm">
+                                    <h1 className="font-outfit text-3xl font-bold text-foreground mb-4">You found me!</h1>
+                                </div>
+
+                                {/* The Scratch Surface */}
+                                <canvas
+                                    ref={scratchRef}
+                                    className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing rounded-xl z-20 touch-none"
+                                />
+
+                                <div className="absolute bottom-6 left-0 right-0 z-30 pointer-events-none animate-pulse text-xs font-bold uppercase tracking-widest text-gray-500">
+                                    Scratch to Reveal
+                                </div>
+                            </div>
+                        ) : (
+                            <motion.div
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className="space-y-8 w-full p-4"
+                            >
+                                <header>
+                                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">
+                                        From: {invite.profiles?.display_name || "Someone Special"}
+                                    </span>
+                                    <div className="my-8 px-4">
+                                        <p className={`font-serif text-2xl sm:text-3xl italic leading-relaxed ${currentTheme === 'heartbreaker' ? 'text-neutral-200' : 'text-foreground'}`}>
+                                            &quot;{invite.message}&quot;
+                                        </p>
+                                    </div>
+                                </header>
+
+                                <Button
+                                    size="lg"
+                                    className={`w-full py-6 text-xl ${config.button} border-none shadow-lg`}
+                                    onClick={() => handleResponse('yes')}
+                                    loading={loading}
+                                >
+                                    Send Love ❤️
+                                </Button>
+
+                                {submissionError && (
+                                    <p className="text-xs font-semibold text-red-500 mt-2">{submissionError}</p>
+                                )}
+                            </motion.div>
+                        )}
+                    </Card>
+                </AnimatePresence>
+            </main>
+        )
+    }
+
+    // Standard Invite Interaction
     return (
         <main className={`flex min-h-screen items-center justify-center p-4 overflow-hidden transition-colors duration-1000 ${config.bg}`}>
             <AnimatePresence>

@@ -27,7 +27,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-md border-b border-gray-100 sm:px-12 sm:py-6">
         <div className="flex items-center gap-2">
           <span className="text-xl">❤️</span>
-          <span className="font-outfit text-xl font-bold tracking-tighter uppercase">Valentine</span>
+          <span className="font-outfit text-xl font-bold tracking-tighter uppercase">BeMine</span>
         </div>
         <Link href="/login">
           <Button variant="ghost" size="sm" className="font-bold uppercase tracking-wider text-xs">Login</Button>

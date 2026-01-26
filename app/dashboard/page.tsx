@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 
     const { data: invites } = await supabase
         .from("invites")
-        .select("*, responses(*, profiles!responder_id(display_name))")
+        .select("id, recipient_name, message, is_public, short_code, created_at, deleted_at, occasion, theme, responses(*, profiles!responder_id(display_name))")
         .eq("creator_id", user.id)
         .is("deleted_at", null)
         .order("created_at", { ascending: false })

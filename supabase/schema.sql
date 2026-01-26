@@ -44,6 +44,7 @@ create table invites (
   is_public boolean default false,
   deleted_at timestamptz, -- NEW: support soft-delete
   theme text default 'classic', -- NEW: classic, rebel, heartbreaker
+  occasion text default 'valentine', -- NEW: valentine, date, anniversary, just_because
   created_at timestamptz default now()
 );
 
