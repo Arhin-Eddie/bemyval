@@ -2,27 +2,33 @@
 
 :root {
   /* Valentine Palette */
-  --background: #fff0f5; /* Lavender Blush */
-  --foreground: #4a044e; /* Dark Fuchsia */
-  
-  --primary: #db2777; /* Pink 600 */
+  --background: #fff0f5;
+  /* Lavender Blush */
+  --foreground: #4a044e;
+  /* Dark Fuchsia */
+
+  --primary: #db2777;
+  /* Pink 600 */
   --primary-foreground: #ffffff;
-  
-  --secondary: #fce7f3; /* Pink 100 */
-  --secondary-foreground: #9d174d; /* Pink 800 */
-  
-  --accent: #f43f5e; /* Rose 500 */
+
+  --secondary: #fce7f3;
+  /* Pink 100 */
+  --secondary-foreground: #9d174d;
+  /* Pink 800 */
+
+  --accent: #f43f5e;
+  /* Rose 500 */
   --accent-foreground: #ffffff;
-  
-  --muted: #fdf2f8; 
+
+  --muted: #fdf2f8;
   --muted-foreground: #db2777;
-  
+
   --card: #ffffff;
   --card-foreground: #4a044e;
-  
+
   --border: #fbcfe8;
   --input: #fbcfe8;
-  
+
   --radius: 1rem;
 }
 
@@ -41,7 +47,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
-  
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -55,6 +61,14 @@ body {
 }
 
 /* Smooth scrolling */
+/* Rebel Theme Grid Overlay */
+.rebel-grid {
+  background-image:
+    linear-gradient(to right, rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(192, 38, 211, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
 html {
   scroll-behavior: smooth;
 }

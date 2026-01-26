@@ -12,6 +12,7 @@ export default function CreateInvitePage() {
     const [recipientName, setRecipientName] = useState("")
     const [message, setMessage] = useState("Will you be my Valentine?")
     const [isPublic, setIsPublic] = useState(false)
+    const [theme, setTheme] = useState("classic")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
@@ -40,6 +41,7 @@ export default function CreateInvitePage() {
                     message,
                     recipient_name: recipientName,
                     is_public: isPublic,
+                    theme: theme,
                 })
 
             if (inviteError) throw inviteError
@@ -89,6 +91,30 @@ export default function CreateInvitePage() {
                                 onChange={(e) => setMessage(e.target.value)}
                                 required
                             />
+                        </div>
+
+                        <div className="space-y-2 sm:space-y-3">
+                            <label className="block text-sm font-semibold text-foreground">
+                                Choose a Vibe
+                            </label>
+                            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                                {[
+                                    { id: 'classic', icon: '💌', label: 'Classic', desc: 'Soft & Elegant' },
+                                    { id: 'rebel', icon: '⚡', label: 'Rebel', desc: 'Neon & Glitch' },
+                                    { id: 'heartbreaker', icon: '🖤', label: 'Heartbreaker', desc: 'Dark & Sarcastic' },
+                                ].map((t) => (
+                                    <button
+                                        key={t.id}
+                                        type="button"
+                                        onClick={() => setTheme(t.id)}
+                                        className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-2xl border-2 transition-all ${theme === t.id ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                                    >
+                                        <span className="text-xl sm:text-2xl mb-1">{t.icon}</span>
+                                        <span className="text-[10px] sm:text-xs font-bold leading-tight">{t.label}</span>
+                                        <span className="hidden sm:block text-[8px] text-muted-foreground mt-1 leading-tight">{t.desc}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
                         <div className="space-y-2 sm:space-y-3">

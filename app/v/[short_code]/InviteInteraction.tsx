@@ -15,6 +15,7 @@ interface Invite {
     message: string
     is_public: boolean
     device_token: string | null
+    theme?: string
     profiles?: { display_name: string }
 }
 
@@ -126,6 +127,49 @@ export function InviteInteraction({ invite }: Props) {
         setSubmitted(true)
     }
 
+    const currentTheme = invite.theme || 'classic'
+
+    const THEME_CONFIG = {
+        classic: {
+            card: "border-primary/20",
+            button: "bg-primary hover:bg-primary/90",
+            secondaryButton: "border-primary/20 text-primary hover:bg-primary/5",
+            ghostButton: "text-red-500 hover:bg-red-50",
+            bg: "bg-[#fff1f2]",
+            emoji: "💖",
+            noTexts: ["No", "Are you sure?", "Really?", "Last chance... 😅"],
+            yesScaleInc: 0.2,
+            confetti: ["#ff4d4d", "#ff8080", "#ffffff"],
+            buttonSpeed: 0.4
+        },
+        rebel: {
+            card: "border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.3)] bg-slate-900 border-2",
+            button: "bg-fuchsia-600 hover:bg-fuchsia-500 shadow-[0_0_15px_rgba(192,38,211,0.5)]",
+            secondaryButton: "border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10",
+            ghostButton: "text-fuchsia-400 hover:bg-fuchsia-500/10",
+            bg: "bg-[#0f172a] rebel-grid",
+            emoji: "⚡",
+            noTexts: ["Nope", "Try again", "Catch me!", "Too slow! 💨"],
+            yesScaleInc: 0.5,
+            confetti: ["#06b6d4", "#c026d3", "#ffffff"],
+            buttonSpeed: 0.1 // Faster transitions
+        },
+        heartbreaker: {
+            card: "border-red-900/50 bg-neutral-950",
+            button: "bg-red-700 hover:bg-red-600",
+            secondaryButton: "border-neutral-800 text-neutral-400 hover:bg-neutral-900",
+            ghostButton: "text-neutral-500 hover:bg-neutral-900",
+            bg: "bg-neutral-950",
+            emoji: "🖤",
+            noTexts: ["Ugh, no", "In your dreams", "Not ever", "Broken heart? 💔"],
+            yesScaleInc: 0.1,
+            confetti: ["#450a0a", "#7f1d1d", "#000000"],
+            buttonSpeed: 0.8
+        }
+    } as const
+
+    const config = THEME_CONFIG[currentTheme as keyof typeof THEME_CONFIG] || THEME_CONFIG.classic
+
     if (!invite.is_public && isLockedByMe === false) {
         return (
             <main className="flex min-h-screen items-center justify-center p-4">
@@ -172,29 +216,22 @@ export function InviteInteraction({ invite }: Props) {
         )
     }
 
-    const noButtonTexts = [
-        "No",
-        "Are you sure?",
-        "Really?",
-        "Last chance... 😅"
-    ]
-
-    const yesScale = 1 + (noCount * 0.2)
+    const yesScale = 1 + (noCount * config.yesScaleInc)
 
     return (
-        <main className="flex min-h-screen items-center justify-center p-4 overflow-hidden">
+        <main className={`flex min-h-screen items-center justify-center p-4 overflow-hidden transition-colors duration-1000 ${config.bg}`}>
             <AnimatePresence>
-                <Card className="max-w-md w-full text-center relative z-10 transition-all duration-500">
+                <Card className={`max-w-md w-full text-center relative z-10 transition-all duration-500 ${config.card}`}>
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         className="space-y-4 sm:space-y-8"
                     >
                         <header>
-                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary/60">
+                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">
                                 To: {invite.recipient_name}
                             </span>
-                            <h1 className="mt-2 sm:mt-4 font-outfit text-2xl sm:text-3xl font-bold leading-tight text-foreground">
+                            <h1 className={`mt-2 sm:mt-4 font-outfit text-2xl sm:text-3xl font-bold leading-tight ${currentTheme === 'heartbreaker' ? 'text-neutral-200' : 'text-foreground'}`}>
                                 {invite.message}
                             </h1>
                         </header>
@@ -206,7 +243,7 @@ export function InviteInteraction({ invite }: Props) {
                             >
                                 <Button
                                     size="lg"
-                                    className="min-w-[120px] sm:min-w-[140px] sm:h-16 sm:px-10 sm:text-xl"
+                                    className={`min-w-[120px] sm:min-w-[140px] sm:h-16 sm:px-10 sm:text-xl ${config.button} border-none`}
                                     onClick={() => handleResponse('yes')}
                                     loading={loading}
                                 >
@@ -218,7 +255,7 @@ export function InviteInteraction({ invite }: Props) {
                                 <Button
                                     variant="outline"
                                     size="md"
-                                    className="min-w-[100px]"
+                                    className={`min-w-[100px] ${config.secondaryButton}`}
                                     onClick={() => handleResponse('maybe')}
                                     disabled={loading}
                                 >
@@ -228,11 +265,11 @@ export function InviteInteraction({ invite }: Props) {
                                 <Button
                                     variant="ghost"
                                     size="md"
-                                    className="min-w-[100px] text-red-500 hover:bg-red-50"
+                                    className={`min-w-[100px] ${config.ghostButton}`}
                                     onClick={handleNoClick}
                                     disabled={loading}
                                 >
-                                    {noButtonTexts[noCount]}
+                                    {config.noTexts[noCount] || "No"}
                                 </Button>
                             </div>
 
@@ -251,12 +288,12 @@ export function InviteInteraction({ invite }: Props) {
                                             value={reason}
                                             onChange={(e) => setReason(e.target.value)}
                                             placeholder="Your reason..."
-                                            className="w-full min-h-[100px] rounded-2xl border border-input bg-white/50 px-4 py-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all resize-none"
+                                            className={`w-full min-h-[100px] rounded-2xl border border-input px-4 py-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all resize-none ${currentTheme === 'heartbreaker' ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-white/50'}`}
                                         />
                                         <Button
                                             size="lg"
                                             variant="primary"
-                                            className="w-full sm:py-4"
+                                            className={`w-full sm:py-4 ${config.button} border-none`}
                                             onClick={handleSubmitReason}
                                             loading={loading}
                                         >

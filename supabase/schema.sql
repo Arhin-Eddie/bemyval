@@ -43,6 +43,7 @@ create table invites (
   device_token uuid, -- Standardized naming: device_token
   is_public boolean default false,
   deleted_at timestamptz, -- NEW: support soft-delete
+  theme text default 'classic', -- NEW: classic, rebel, heartbreaker
   created_at timestamptz default now()
 );
 
