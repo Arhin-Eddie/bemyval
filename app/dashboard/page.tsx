@@ -22,11 +22,11 @@ export default async function DashboardPage() {
             <div className="mx-auto max-w-6xl">
                 <header className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                     <div>
-                        <h1 className="font-outfit text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                            Your Invitations
+                        <h1 className="font-outfit text-2xl sm:text-3xl font-bold tracking-tight text-foreground uppercase">
+                            Your Romantic Plans
                         </h1>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                            Monitor your mischievous invites and their responses.
+                        <p className="text-xs sm:text-sm text-muted-foreground italic">
+                            Monitor your mischievous date requests and see who finally says yes.
                         </p>
                     </div>
                     <Link href="/create">
