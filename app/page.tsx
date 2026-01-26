@@ -1,5 +1,5 @@
-"use client"
-
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
@@ -21,6 +21,17 @@ const stagger = {
 }
 
 export default function Home() {
+  const [user, setUser] = useState<any>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    checkUser()
+  }, [supabase])
+
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
       {/* Header */}
@@ -29,9 +40,15 @@ export default function Home() {
           <span className="text-xl">❤️</span>
           <span className="font-outfit text-xl font-bold tracking-tighter uppercase">BeMine</span>
         </div>
-        <Link href="/login">
-          <Button variant="ghost" size="sm" className="font-bold uppercase tracking-wider text-xs">Login</Button>
-        </Link>
+        {user ? (
+          <Link href="/dashboard">
+            <Button variant="ghost" size="sm" className="font-bold uppercase tracking-wider text-xs">Dashboard</Button>
+          </Link>
+        ) : (
+          <Link href="/login">
+            <Button variant="ghost" size="sm" className="font-bold uppercase tracking-wider text-xs">Login</Button>
+          </Link>
+        )}
       </header>
 
       {/* Hero Section */}
