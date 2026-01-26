@@ -31,7 +31,7 @@ export default async function DashboardPage() {
                     </div>
                     <Link href="/create">
                         <Button variant="primary" size="lg">
-                            Create New Invite
+                            Ask Someone Out 🏹
                         </Button>
                     </Link>
                 </header>
@@ -39,10 +39,10 @@ export default async function DashboardPage() {
                 {invites && invites.length > 0 ? (
                     <DashboardClient initialInvites={invites} />
                 ) : (
-                    <div className="flex h-64 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border bg-white/30 text-center">
-                        <p className="text-muted-foreground">No invitations yet. Start the magic!</p>
+                    <div className="flex h-64 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border bg-white/30 text-center px-4">
+                        <p className="text-muted-foreground italic max-w-sm">No romantic plans yet. Start your journey by asking that special someone!</p>
                         <Link href="/create" className="mt-4">
-                            <Button variant="outline">Create Initial Invite</Button>
+                            <Button variant="outline">Plan Your First Date</Button>
                         </Link>
                     </div>
                 )}
