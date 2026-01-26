@@ -60,19 +60,19 @@ export default function Home() {
             className="text-center"
           >
             <motion.span variants={fadeInUp} className="inline-block text-primary font-bold uppercase tracking-[0.3em] text-[10px] sm:text-xs mb-4">
-              Premium Hero Valentine
+              Premium Romantic Experience
             </motion.span>
             <motion.h1 variants={fadeInUp} className="font-outfit text-4xl sm:text-7xl font-bold tracking-tight mb-6 leading-[1.05]">
-              Invitations with a <br />
+              Ask them out with a <br />
               <span className="text-primary italic">mischievous</span> twist.
             </motion.h1>
             <motion.p variants={fadeInUp} className="mx-auto max-w-2xl text-gray-400 text-base sm:text-lg mb-10 leading-relaxed">
-              Craft personalized, high-end Valentine's invites that tease, please, and leave them wanting more. No account required.
+              Craft a playful, high-end digital date request. No generic invites—just a strictly romantic, unforgettable way to ask for their time.
             </motion.p>
             <motion.div variants={fadeInUp}>
               <Link href="/create">
                 <Button variant="primary" size="xl" className="group h-14 sm:h-16 px-10 rounded-full text-base sm:text-lg shadow-[0_10px_30px_rgba(219,39,119,0.4)]">
-                  Create Your Invite
+                  Ask Your Special Someone
                   <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                 </Button>
               </Link>
@@ -90,7 +90,7 @@ export default function Home() {
         <div className="container mx-auto max-w-5xl px-6">
           <header className="mb-16 flex items-end justify-between border-b border-gray-100 pb-8">
             <div>
-              <h2 className="font-outfit text-3xl sm:text-4xl font-bold">The Experience</h2>
+              <h2 className="font-outfit text-3xl sm:text-4xl font-bold">The Romantic Journey</h2>
             </div>
             <div className="text-primary font-bold uppercase tracking-widest text-xs">
               3 Steps
@@ -100,29 +100,29 @@ export default function Home() {
           <div className="grid gap-12 sm:grid-cols-3">
             <div className="space-y-6">
               <div className="h-14 w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary text-2xl shadow-inner">
-                🎨
+                💌
               </div>
-              <h3 className="text-xl font-bold">Craft</h3>
+              <h3 className="text-xl font-bold">The Proposal</h3>
               <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
-                Design your unique message with our interactive creation flow. Pick a vibe that fits your plan.
+                Write your message. Be sweet, be bold, or be a little teasing. This is your digital first impression.
               </p>
             </div>
             <div className="space-y-6">
               <div className="h-14 w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary text-2xl shadow-inner">
                 🔒
               </div>
-              <h3 className="text-xl font-bold">Lock</h3>
+              <h3 className="text-xl font-bold">The Mystery</h3>
               <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
-                Send the secure link. Our Mischievous Lock ensures only your special someone can open it.
+                Only their eyes will see it. Our device lock ensures the mystery stays between the two of you.
               </p>
             </div>
             <div className="space-y-6">
               <div className="h-14 w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary text-2xl shadow-inner">
-                📊
+                ❤️
               </div>
-              <h3 className="text-xl font-bold">Track</h3>
+              <h3 className="text-xl font-bold">The Yes</h3>
               <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
-                Watch their struggle in real-time. See every "No" click and read their final response instantly.
+                Watch as they struggle to say no—and finally get that "Yes" with real-time feedback on your dashboard.
               </p>
             </div>
           </div>
@@ -133,13 +133,13 @@ export default function Home() {
       <section className="py-20 sm:py-32 bg-[#fff1f2] border-t border-primary/5">
         <div className="container mx-auto max-w-3xl px-6 text-center">
           <Card className="p-12 sm:p-20 shadow-2xl bg-white/80 border-none">
-            <h2 className="font-outfit text-3xl sm:text-5xl font-bold mb-6">Ready to tease?</h2>
+            <h2 className="font-outfit text-3xl sm:text-5xl font-bold mb-6">Ready to ask them?</h2>
             <p className="text-muted-foreground text-base sm:text-lg mb-10 leading-relaxed">
-              Start building your premium Valentine's experience today. No account required to start, just your creativity.
+              Stop sending boring texts. Start building your premium date request now and get the answer you deserve.
             </p>
             <Link href="/create">
               <Button variant="primary" size="xl" className="w-full sm:w-auto h-16 px-12 rounded-full text-lg shadow-xl">
-                Start Designing
+                Start Your Romantic Gesture
               </Button>
             </Link>
           </Card>
