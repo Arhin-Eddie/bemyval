@@ -45,10 +45,11 @@ export default function Home() {
             className="relative w-48 h-48 sm:w-80 sm:h-80 mb-8 sm:mb-12"
           >
             <Image
-              src="/hero-heart-v2.png"
+              src="/hero-heart-v3.png"
               alt="3D Heart Centerpiece"
               fill
               className="object-contain drop-shadow-[0_20px_50px_rgba(219,39,119,0.3)]"
+              style={{ mixBlendMode: 'screen' }}
               priority
             />
           </motion.div>
