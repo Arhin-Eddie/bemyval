@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { motion } from "framer-motion"
@@ -5,6 +7,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
+import { User } from "@supabase/supabase-js"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -21,7 +24,7 @@ const stagger = {
 }
 
 export default function Home() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -40,11 +43,7 @@ export default function Home() {
           <span className="text-xl">❤️</span>
           <span className="font-outfit text-xl font-bold tracking-tighter uppercase">BeMine</span>
         </div>
-        {user ? (
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="font-bold uppercase tracking-wider text-xs">Dashboard</Button>
-          </Link>
-        ) : (
+        {user ? null : (
           <Link href="/login">
             <Button variant="ghost" size="sm" className="font-bold uppercase tracking-wider text-xs">Login</Button>
           </Link>
@@ -140,7 +139,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold">The Yes</h3>
               <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
-                Watch as they struggle to say no—and finally get that "Yes" with real-time feedback on your dashboard.
+                Watch as they struggle to say no—and finally get that &quot;Yes&quot; with real-time feedback on your dashboard.
               </p>
             </div>
           </div>

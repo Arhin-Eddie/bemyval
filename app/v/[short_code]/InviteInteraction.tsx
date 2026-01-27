@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import confetti from "canvas-confetti"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
-import { v4 as uuidv4 } from "uuid" // Need to install uuid
+import { v4 as uuidv4 } from "uuid"
 
 interface Invite {
     id: string
@@ -25,6 +25,7 @@ interface Props {
 }
 
 export function InviteInteraction({ invite }: Props) {
+    // 1. All Hooks Must Be At Top Level
     const [noCount, setNoCount] = useState(0)
     const [loading, setLoading] = useState(false)
     const [isLockedByMe, setIsLockedByMe] = useState<boolean | null>(null)
@@ -33,9 +34,200 @@ export function InviteInteraction({ invite }: Props) {
     const [submissionError, setSubmissionError] = useState<string | null>(null)
     const [reason, setReason] = useState("")
     const [showReasonInput, setShowReasonInput] = useState(false)
+
+    // Scratch Card State
     const [isUnwrapped, setIsUnwrapped] = useState(false)
+    const [isScratching, setIsScratching] = useState(false)
+    const scratchRef = useRef<HTMLCanvasElement>(null)
+
     const supabase = createClient()
 
+    // 2. Derive Config (Pure Logic) - Safe to run every render
+    const currentTheme = invite.theme || 'classic'
+
+    const THEME_CONFIG = {
+        classic: {
+            card: "border-primary/20",
+            button: "bg-primary hover:bg-primary/90",
+            secondaryButton: "border-primary/20 text-primary hover:bg-primary/5",
+            ghostButton: "text-red-500 hover:bg-red-50",
+            bg: "bg-[#fff1f2]",
+            emoji: "💖",
+            noTexts: ["No", "Are you sure?", "Really?", "Last chance... 😅"],
+            yesScaleInc: 0.2,
+            confetti: ["#ff4d4d", "#ff8080", "#ffffff"],
+            buttonSpeed: 0.4
+        },
+        rebel: {
+            card: "border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.3)] bg-slate-900 border-2",
+            button: "bg-fuchsia-600 hover:bg-fuchsia-500 shadow-[0_0_15px_rgba(192,38,211,0.5)]",
+            secondaryButton: "border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10",
+            ghostButton: "text-fuchsia-400 hover:bg-fuchsia-500/10",
+            bg: "bg-[#0f172a] rebel-grid",
+            emoji: "⚡",
+            noTexts: ["Nope", "Try again", "Catch me!", "Too slow! 💨"],
+            yesScaleInc: 0.5,
+            confetti: ["#06b6d4", "#c026d3", "#ffffff"],
+            buttonSpeed: 0.1
+        },
+        heartbreaker: {
+            card: "border-red-900/50 bg-neutral-950",
+            button: "bg-red-700 hover:bg-red-600",
+            secondaryButton: "border-neutral-800 text-neutral-400 hover:bg-neutral-900",
+            ghostButton: "text-neutral-500 hover:bg-neutral-900",
+            bg: "bg-neutral-950",
+            emoji: "🖤",
+            noTexts: ["Ugh, no", "In your dreams", "Not ever", "Broken heart? 💔"],
+            yesScaleInc: 0.1,
+            confetti: ["#450a0a", "#7f1d1d", "#000000"],
+            buttonSpeed: 0.8
+        }
+    } as const
+
+    const config = THEME_CONFIG[currentTheme as keyof typeof THEME_CONFIG] || THEME_CONFIG.classic
+
+    // 3. Define Handlers needed for Effects
+    const handleUnwrap = useCallback(() => {
+        if (isUnwrapped) return
+        setIsUnwrapped(true)
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100])
+        // Need to cast to avoid readonly type issues if necessary, or just spread
+        const colors = [...config.confetti]
+        confetti({
+            particleCount: 200,
+            spread: 100,
+            origin: { y: 0.6 },
+            colors: colors
+        })
+    }, [isUnwrapped, config.confetti])
+
+    // 4. Effects
+    // Scratch Card Effect
+    useEffect(() => {
+        // Only run this effect logic if we are in 'just_because' mode AND effectively mounted
+        if (invite.occasion !== 'just_because') return
+        if (isUnwrapped || !scratchRef.current) return
+
+        const canvas = scratchRef.current
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+
+        // Setup Canvas
+        const resize = () => {
+            const parent = canvas.parentElement
+            if (parent) {
+                canvas.width = parent.offsetWidth
+                canvas.height = parent.offsetHeight
+                initCard(ctx, canvas.width, canvas.height)
+            }
+        }
+
+        const initCard = (context: CanvasRenderingContext2D, width: number, height: number) => {
+            context.fillStyle = '#C0C0C0' // Fallback
+
+            // Create fancy gradient
+            const gradient = context.createLinearGradient(0, 0, width, height)
+            gradient.addColorStop(0, '#e5e7eb')
+            gradient.addColorStop(0.2, '#9ca3af')
+            gradient.addColorStop(0.4, '#e5e7eb')
+            gradient.addColorStop(0.6, '#9ca3af')
+            gradient.addColorStop(0.8, '#d1d5db')
+            gradient.addColorStop(1, '#9ca3af')
+
+            context.fillStyle = gradient
+            context.fillRect(0, 0, width, height)
+
+            // Add text "Scratch Me"
+            context.font = 'bold 24px Arial'
+            context.fillStyle = '#4b5563'
+            context.textAlign = 'center'
+            context.textBaseline = 'middle'
+            context.fillText('✨ Scratch to Reveal ✨', width / 2, height / 2)
+        }
+
+        resize()
+        window.addEventListener('resize', resize)
+
+        // Scratch Logic
+        const scratch = (x: number, y: number) => {
+            ctx.globalCompositeOperation = 'destination-out'
+            ctx.beginPath()
+            ctx.arc(x, y, 30, 0, Math.PI * 2)
+            ctx.fill()
+
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(5)
+        }
+
+        const handleStart = () => setIsScratching(true)
+        const handleEnd = () => {
+            setIsScratching(false)
+            checkReveal()
+        }
+
+        const handleMove = (e: MouseEvent | TouchEvent) => {
+            if (!isScratching) return
+            // Don't prevent default here to allow scrolling if needed, 
+            // but usually we want to prevent it on the canvas itself.
+
+            const rect = canvas.getBoundingClientRect()
+            let clientX, clientY
+
+            if ('touches' in e) {
+                clientX = e.touches[0].clientX
+                clientY = e.touches[0].clientY
+            } else {
+                clientX = (e as MouseEvent).clientX
+                clientY = (e as MouseEvent).clientY
+            }
+
+            const x = clientX - rect.left
+            const y = clientY - rect.top
+
+            scratch(x, y)
+        }
+
+        // Check Reveal status by sampling pixels
+        const checkReveal = () => {
+            try {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+                const data = imageData.data
+                let transparentPixels = 0
+
+                // Sample every 40th pixel for performance (stride of 4 * 10)
+                for (let i = 0; i < data.length; i += 40) {
+                    if (data[i + 3] === 0) transparentPixels++
+                }
+
+                const visualTotal = data.length / 40
+                if (transparentPixels / visualTotal > 0.4) {
+                    handleUnwrap()
+                }
+            } catch {
+                // Ignore cross-origin issues if any
+            }
+        }
+
+        canvas.addEventListener('mousedown', handleStart)
+        canvas.addEventListener('mousemove', handleMove)
+        canvas.addEventListener('mouseup', handleEnd)
+        canvas.addEventListener('touchstart', handleStart)
+        canvas.addEventListener('touchmove', handleMove)
+        canvas.addEventListener('touchend', handleEnd)
+
+        return () => {
+            window.removeEventListener('resize', resize)
+            canvas.removeEventListener('mousedown', handleStart)
+            canvas.removeEventListener('mousemove', handleMove)
+            canvas.removeEventListener('mouseup', handleEnd)
+            canvas.removeEventListener('touchstart', handleStart)
+            canvas.removeEventListener('touchmove', handleMove)
+            canvas.removeEventListener('touchend', handleEnd)
+        }
+
+    }, [invite.occasion, isUnwrapped, isScratching, handleUnwrap]) // Fixed: Added handleUnwrap and invite.occasion
+
+    // Lock Check Effect
     useEffect(() => {
         const initAnonId = () => {
             let id = localStorage.getItem("anon_id")
@@ -72,6 +264,8 @@ export function InviteInteraction({ invite }: Props) {
         checkLock(id)
     }, [invite.id, invite.device_token, supabase])
 
+
+    // 5. Interaction Handlers
     const handleResponse = async (answer: 'yes' | 'no' | 'maybe', providedReason?: string) => {
         if (!anonId || loading) return
         setLoading(true)
@@ -129,49 +323,7 @@ export function InviteInteraction({ invite }: Props) {
         setSubmitted(true)
     }
 
-    const currentTheme = invite.theme || 'classic'
-
-    const THEME_CONFIG = {
-        classic: {
-            card: "border-primary/20",
-            button: "bg-primary hover:bg-primary/90",
-            secondaryButton: "border-primary/20 text-primary hover:bg-primary/5",
-            ghostButton: "text-red-500 hover:bg-red-50",
-            bg: "bg-[#fff1f2]",
-            emoji: "💖",
-            noTexts: ["No", "Are you sure?", "Really?", "Last chance... 😅"],
-            yesScaleInc: 0.2,
-            confetti: ["#ff4d4d", "#ff8080", "#ffffff"],
-            buttonSpeed: 0.4
-        },
-        rebel: {
-            card: "border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.3)] bg-slate-900 border-2",
-            button: "bg-fuchsia-600 hover:bg-fuchsia-500 shadow-[0_0_15px_rgba(192,38,211,0.5)]",
-            secondaryButton: "border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10",
-            ghostButton: "text-fuchsia-400 hover:bg-fuchsia-500/10",
-            bg: "bg-[#0f172a] rebel-grid",
-            emoji: "⚡",
-            noTexts: ["Nope", "Try again", "Catch me!", "Too slow! 💨"],
-            yesScaleInc: 0.5,
-            confetti: ["#06b6d4", "#c026d3", "#ffffff"],
-            buttonSpeed: 0.1 // Faster transitions
-        },
-        heartbreaker: {
-            card: "border-red-900/50 bg-neutral-950",
-            button: "bg-red-700 hover:bg-red-600",
-            secondaryButton: "border-neutral-800 text-neutral-400 hover:bg-neutral-900",
-            ghostButton: "text-neutral-500 hover:bg-neutral-900",
-            bg: "bg-neutral-950",
-            emoji: "🖤",
-            noTexts: ["Ugh, no", "In your dreams", "Not ever", "Broken heart? 💔"],
-            yesScaleInc: 0.1,
-            confetti: ["#450a0a", "#7f1d1d", "#000000"],
-            buttonSpeed: 0.8
-        }
-    } as const
-
-    const config = THEME_CONFIG[currentTheme as keyof typeof THEME_CONFIG] || THEME_CONFIG.classic
-
+    // 6. Early Returns (Rendering Logic)
     if (!invite.is_public && isLockedByMe === false) {
         return (
             <main className="flex min-h-screen items-center justify-center p-4">
@@ -221,148 +373,11 @@ export function InviteInteraction({ invite }: Props) {
         )
     }
 
+    // 7. Render Conditional Modes
     const yesScale = 1 + (noCount * config.yesScaleInc)
 
     // Surprise Mode Interaction (Scratch Card)
     if (invite.occasion === 'just_because') {
-        const scratchRef = useRef<HTMLCanvasElement>(null)
-        const [isScratching, setIsScratching] = useState(false)
-
-        useEffect(() => {
-            if (isUnwrapped || !scratchRef.current) return
-
-            const canvas = scratchRef.current
-            const ctx = canvas.getContext('2d')
-            if (!ctx) return
-
-            // Setup Canvas
-            const resize = () => {
-                const parent = canvas.parentElement
-                if (parent) {
-                    canvas.width = parent.offsetWidth
-                    canvas.height = parent.offsetHeight
-                    initCard(ctx, canvas.width, canvas.height)
-                }
-            }
-
-            const initCard = (context: CanvasRenderingContext2D, width: number, height: number) => {
-                context.fillStyle = '#C0C0C0' // Fallback
-
-                // Create fancy gradient
-                const gradient = context.createLinearGradient(0, 0, width, height)
-                gradient.addColorStop(0, '#e5e7eb')
-                gradient.addColorStop(0.2, '#9ca3af')
-                gradient.addColorStop(0.4, '#e5e7eb')
-                gradient.addColorStop(0.6, '#9ca3af')
-                gradient.addColorStop(0.8, '#d1d5db')
-                gradient.addColorStop(1, '#9ca3af')
-
-                context.fillStyle = gradient
-                context.fillRect(0, 0, width, height)
-
-                // Add text "Scratch Me"
-                context.font = 'bold 24px Arial'
-                context.fillStyle = '#4b5563'
-                context.textAlign = 'center'
-                context.textBaseline = 'middle'
-                context.fillText('✨ Scratch to Reveal ✨', width / 2, height / 2)
-            }
-
-            resize()
-            window.addEventListener('resize', resize)
-
-            // Scratch Logic
-            const scratch = (x: number, y: number) => {
-                ctx.globalCompositeOperation = 'destination-out'
-                ctx.beginPath()
-                ctx.arc(x, y, 30, 0, Math.PI * 2)
-                ctx.fill()
-
-                // Haptic feedback
-                if (navigator.vibrate) navigator.vibrate(5)
-            }
-
-            const handleStart = () => setIsScratching(true)
-            const handleEnd = () => {
-                setIsScratching(false)
-                checkReveal()
-            }
-
-            const handleMove = (e: MouseEvent | TouchEvent) => {
-                if (!isScratching) return
-                // Don't prevent default here to allow scrolling if needed, 
-                // but usually we want to prevent it on the canvas itself.
-                // e.preventDefault() 
-
-                const rect = canvas.getBoundingClientRect()
-                let clientX, clientY
-
-                if ('touches' in e) {
-                    clientX = e.touches[0].clientX
-                    clientY = e.touches[0].clientY
-                } else {
-                    clientX = (e as MouseEvent).clientX
-                    clientY = (e as MouseEvent).clientY
-                }
-
-                const x = clientX - rect.left
-                const y = clientY - rect.top
-
-                scratch(x, y)
-            }
-
-            // Check Reveal status by sampling pixels
-            const checkReveal = () => {
-                try {
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-                    const data = imageData.data
-                    let transparentPixels = 0
-
-                    // Sample every 40th pixel for performance (stride of 4 * 10)
-                    for (let i = 0; i < data.length; i += 40) {
-                        if (data[i + 3] === 0) transparentPixels++
-                    }
-
-                    const visualTotal = data.length / 40
-                    if (transparentPixels / visualTotal > 0.4) {
-                        handleUnwrap()
-                    }
-                } catch (e) {
-                    // Ignore cross-origin issues if any
-                }
-            }
-
-            canvas.addEventListener('mousedown', handleStart)
-            canvas.addEventListener('mousemove', handleMove)
-            canvas.addEventListener('mouseup', handleEnd)
-            canvas.addEventListener('touchstart', handleStart)
-            canvas.addEventListener('touchmove', handleMove)
-            canvas.addEventListener('touchend', handleEnd)
-
-            return () => {
-                window.removeEventListener('resize', resize)
-                canvas.removeEventListener('mousedown', handleStart)
-                canvas.removeEventListener('mousemove', handleMove)
-                canvas.removeEventListener('mouseup', handleEnd)
-                canvas.removeEventListener('touchstart', handleStart)
-                canvas.removeEventListener('touchmove', handleMove)
-                canvas.removeEventListener('touchend', handleEnd)
-            }
-
-        }, [isUnwrapped, isScratching])
-
-        const handleUnwrap = () => {
-            if (isUnwrapped) return
-            setIsUnwrapped(true)
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100])
-            confetti({
-                particleCount: 200,
-                spread: 100,
-                origin: { y: 0.6 },
-                colors: [...config.confetti]
-            })
-        }
-
         return (
             <main className={`flex min-h-screen items-center justify-center p-4 overflow-hidden transition-colors duration-1000 ${config.bg}`}>
                 <AnimatePresence>
