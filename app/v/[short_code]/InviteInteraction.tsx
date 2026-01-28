@@ -264,6 +264,14 @@ export function InviteInteraction({ invite }: Props) {
         checkLock(id)
     }, [invite.id, invite.device_token, supabase])
 
+    // Mark as Opened (Read Receipt)
+    useEffect(() => {
+        const markOpened = async () => {
+            await supabase.rpc('mark_invite_opened', { p_invite_id: invite.id })
+        }
+        markOpened()
+    }, [invite.id, supabase])
+
 
     // 5. Interaction Handlers
     const handleResponse = async (answer: 'yes' | 'no' | 'maybe', providedReason?: string) => {
@@ -406,7 +414,7 @@ export function InviteInteraction({ invite }: Props) {
                                 className="space-y-8 w-full p-4"
                             >
                                 <header>
-                                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">
+                                    <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 ${currentTheme === 'heartbreaker' || currentTheme === 'rebel' ? 'text-neutral-200' : 'text-foreground'}`}>
                                         From: {invite.profiles?.display_name || "Someone Special"}
                                     </span>
                                     <div className="my-8 px-4">
@@ -423,6 +431,16 @@ export function InviteInteraction({ invite }: Props) {
                                     loading={loading}
                                 >
                                     Send Love ❤️
+                                </Button>
+
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className={`w-full ${config.ghostButton} text-xs sm:text-sm font-medium opacity-80 hover:opacity-100 mt-2`}
+                                    onClick={() => handleResponse('no')}
+                                    disabled={loading}
+                                >
+                                    Not my vibe 😕
                                 </Button>
 
                                 {submissionError && (
@@ -447,7 +465,7 @@ export function InviteInteraction({ invite }: Props) {
                         className="space-y-4 sm:space-y-8"
                     >
                         <header>
-                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">
+                            <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 ${currentTheme === 'heartbreaker' || currentTheme === 'rebel' ? 'text-neutral-200' : 'text-foreground'}`}>
                                 To: {invite.recipient_name}
                             </span>
                             <h1 className={`mt-2 sm:mt-4 font-outfit text-2xl sm:text-3xl font-bold leading-tight ${currentTheme === 'heartbreaker' ? 'text-neutral-200' : 'text-foreground'}`}>
@@ -466,7 +484,7 @@ export function InviteInteraction({ invite }: Props) {
                                     onClick={() => handleResponse('yes')}
                                     loading={loading}
                                 >
-                                    Yes 💍
+                                    Yes 💖
                                 </Button>
                             </motion.div>
 

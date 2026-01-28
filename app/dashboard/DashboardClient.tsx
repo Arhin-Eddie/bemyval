@@ -28,6 +28,7 @@ interface Invite {
     responses: Response[]
     deleted_at: string | null
     occasion?: string
+    opened_at: string | null
 }
 
 interface DashboardClientProps {
@@ -138,6 +139,23 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                     })
                 }
             )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'invites',
+                },
+                (payload) => {
+                    setInvites(currentInvites => {
+                        return currentInvites.map(invite =>
+                            invite.id === payload.new.id
+                                ? { ...invite, ...payload.new }
+                                : invite
+                        )
+                    })
+                }
+            )
             .subscribe()
 
         return () => {
@@ -228,6 +246,12 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                                 {hasFeedback && (
                                     <span className={`flex h-5 items-center rounded-full px-2 text-[8px] font-bold uppercase tracking-wider ${palette.badge}`}>
                                         New Feedback
+                                    </span>
+                                )}
+
+                                {!hasFeedback && !invite.responses?.length && invite.opened_at && (
+                                    <span className="flex h-5 items-center rounded-full bg-blue-100 px-2 text-[8px] font-bold uppercase tracking-wider text-blue-600">
+                                        Opened
                                     </span>
                                 )}
                                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" title="Live Updates Active" />

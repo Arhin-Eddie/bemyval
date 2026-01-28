@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 
     const { data: invites } = await supabase
         .from("invites")
-        .select("id, recipient_name, message, is_public, short_code, created_at, deleted_at, occasion, theme, responses(*, profiles!responder_id(display_name))")
+        .select("id, recipient_name, message, is_public, short_code, created_at, deleted_at, occasion, opened_at, theme, responses(*, profiles!responder_id(display_name))")
         .eq("creator_id", user.id)
         .is("deleted_at", null)
         .order("created_at", { ascending: false })
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
                 </header>
 
                 {invites && invites.length > 0 ? (
-                    <DashboardClient initialInvites={invites} />
+                    <DashboardClient initialInvites={invites as any} />
                 ) : (
                     <div className="flex h-64 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border bg-white/30 text-center px-4">
                         <p className="text-muted-foreground italic max-w-sm">No romantic plans yet. Start your journey by asking that special someone!</p>
