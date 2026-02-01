@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import Link from "next/link"
 import { CopyLinkButton } from "@/components/CopyLinkButton"
-import { Trash2, AlertCircle } from "lucide-react"
+import { Trash2, AlertCircle, Heart, Lock, Globe, Users, Calendar, BarChart3, CheckCheck, Inbox, Flame } from "lucide-react"
 import { AnimatePresence } from "framer-motion"
 
 interface Response {
@@ -89,11 +89,11 @@ const ROMANTIC_PALETTES = [
 ]
 
 const OCCASIONS = [
-    { id: 'all', label: 'All Plans', icon: '💖' },
-    { id: 'valentine', label: 'Valentine', icon: '🌹' },
-    { id: 'date', label: 'Dates', icon: '🥂' },
-    { id: 'anniversary', label: 'Anniversary', icon: '💑' },
-    { id: 'just_because', label: 'Surprises', icon: '✨' },
+    { id: 'all', label: 'All Plans', icon: <Inbox className="h-4 w-4" /> },
+    { id: 'valentine', label: 'Valentine', icon: <Heart className="h-4 w-4" /> },
+    { id: 'date', label: 'Dates', icon: <Calendar className="h-4 w-4" /> },
+    { id: 'anniversary', label: 'Anniversary', icon: <Users className="h-4 w-4" /> },
+    { id: 'just_because', label: 'Surprises', icon: <Flame className="h-4 w-4" /> },
 ]
 
 export function DashboardClient({ initialInvites }: DashboardClientProps) {
@@ -198,12 +198,18 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
             {/* Stats Overview */}
             <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <Card className="p-4 flex flex-col items-center justify-center bg-white border-primary/10">
+                    <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center mb-2">
+                        <BarChart3 className="h-4 w-4 text-primary" />
+                    </div>
                     <span className="text-3xl font-bold text-primary">{successRate}%</span>
-                    <span className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Success Rate</span>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest text-center">Success Rate</span>
                 </Card>
                 <Card className="p-4 flex flex-col items-center justify-center bg-white border-primary/10">
+                    <div className="h-8 w-8 rounded-full bg-emerald-50 flex items-center justify-center mb-2">
+                        <Inbox className="h-4 w-4 text-emerald-600" />
+                    </div>
                     <span className="text-3xl font-bold text-foreground">{invites.length}</span>
-                    <span className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Total Plans</span>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest text-center">Total Plans</span>
                 </Card>
             </div>
 
@@ -214,13 +220,13 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                         key={occ.id}
                         onClick={() => setFilter(occ.id)}
                         className={`
-                            whitespace-nowrap flex-shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all
+                            whitespace-nowrap flex-shrink-0 flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all
                             ${filter === occ.id
                                 ? 'bg-primary text-white shadow-lg shadow-primary/20'
                                 : 'bg-white text-muted-foreground hover:bg-gray-50 border border-gray-100'}
                         `}
                     >
-                        <span className="mr-2">{occ.icon}</span>
+                        {occ.icon}
                         {occ.label}
                     </button>
                 ))}
@@ -250,8 +256,9 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
                                 )}
 
                                 {!hasFeedback && !invite.responses?.length && invite.opened_at && (
-                                    <span className="flex h-5 items-center rounded-full bg-blue-100 px-2 text-[8px] font-bold uppercase tracking-wider text-blue-600">
-                                        Opened
+                                    <span className="flex h-5 items-center gap-1 rounded-full bg-blue-50 px-2 text-[8px] font-bold uppercase tracking-wider text-blue-600 border border-blue-100">
+                                        <CheckCheck className="h-2.5 w-2.5" />
+                                        Seen
                                     </span>
                                 )}
                                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" title="Live Updates Active" />
@@ -262,11 +269,11 @@ export function DashboardClient({ initialInvites }: DashboardClientProps) {
 
                             <div className="mb-4 flex items-center justify-between relative z-10">
                                 <div className="flex items-center gap-2">
-                                    <span className={`text-xs font-semibold uppercase tracking-wider ${palette.primary}`}>
+                                    <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${palette.primary}`}>
                                         {invite.recipient_name}
                                     </span>
                                     <span title={invite.is_public ? "Public Invitation" : "Private Invitation"}>
-                                        {invite.is_public ? "🌍" : "🔒"}
+                                        {invite.is_public ? <Globe className="h-3 w-3 text-muted-foreground" /> : <Lock className="h-3 w-3 text-muted-foreground" />}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">

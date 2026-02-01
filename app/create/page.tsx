@@ -8,6 +8,19 @@ import { Card } from "@/components/ui/Card"
 import { Input } from "@/components/ui/Input"
 import { createClient } from "@/lib/supabase/client"
 import { nanoid } from "nanoid"
+import {
+    Heart,
+    Calendar,
+    Users,
+    Flame,
+    Zap,
+    Sparkles,
+    ShieldCheck,
+    Globe,
+    Lock,
+    Inbox,
+    Send
+} from "lucide-react"
 
 // Wizard Steps
 const STEPS = [
@@ -117,25 +130,27 @@ export default function CreateInvitePage() {
                                 {step === 1 && (
                                     <div className="grid grid-cols-2 gap-4">
                                         {[
-                                            { id: 'valentine', icon: '🌹', label: 'Valentine' },
-                                            { id: 'date', icon: '🥂', label: 'Date Night' },
-                                            { id: 'anniversary', icon: '💑', label: 'Anniversary' },
-                                            { id: 'just_because', icon: '🎁', label: 'Surprise' }
+                                            { id: 'valentine', icon: <Heart className="h-6 w-6 text-primary fill-primary" />, label: 'Valentine' },
+                                            { id: 'date', icon: <Calendar className="h-6 w-6 text-blue-500" />, label: 'Date Night' },
+                                            { id: 'anniversary', icon: <Users className="h-6 w-6 text-purple-500" />, label: 'Anniversary' },
+                                            { id: 'just_because', icon: <Flame className="h-6 w-6 text-orange-500" />, label: 'Surprise' }
                                         ].map((occ) => (
                                             <button
                                                 key={occ.id}
                                                 onClick={() => {
                                                     setOccasion(occ.id)
                                                     if (occ.id === 'just_because') {
-                                                        setMessage("Surprise! Open to see what's inside... 🎁")
+                                                        setMessage("Strategic mission: Authentic communication protocol initialized.")
                                                     } else {
                                                         setMessage("Will you go out with me?")
                                                     }
                                                 }}
                                                 className={`p-4 rounded-xl border-2 text-left transition-all hover:scale-[1.02] ${occasion === occ.id ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-100 hover:border-primary/30'}`}
                                             >
-                                                <div className="text-3xl mb-2">{occ.icon}</div>
-                                                <div className="font-bold text-sm text-foreground">{occ.label}</div>
+                                                <div className="mb-3 h-12 w-12 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:bg-primary/5 group-hover:border-primary/20 transition-colors">
+                                                    {occ.icon}
+                                                </div>
+                                                <div className="font-bold text-xs uppercase tracking-widest text-foreground">{occ.label}</div>
                                             </button>
                                         ))}
                                     </div>
@@ -145,16 +160,16 @@ export default function CreateInvitePage() {
                                 {step === 2 && (
                                     <div className="space-y-4">
                                         {[
-                                            { id: 'classic', icon: '💌', label: 'The Classic', desc: 'Elegant, soft reds, timeless romance.' },
-                                            { id: 'rebel', icon: '⚡', label: 'The Rebel', desc: 'Neon, glitch effects, fast-paced fun.' },
-                                            { id: 'heartbreaker', icon: '🖤', label: 'The Heartbreaker', desc: 'Dark mode, sarcastic, moody.' },
+                                            { id: 'classic', icon: <Inbox className="h-6 w-6 text-primary" />, label: 'The Classic', desc: 'Elegant, soft reds, timeless romance.' },
+                                            { id: 'rebel', icon: <Zap className="h-6 w-6 text-cyan-500" />, label: 'The Rebel', desc: 'Neon, glitch effects, fast-paced fun.' },
+                                            { id: 'heartbreaker', icon: <Sparkles className="h-6 w-6 text-neutral-600" />, label: 'The Heartbreaker', desc: 'Dark mode, mood-focused, premium.' },
                                         ].map((t) => (
                                             <button
                                                 key={t.id}
                                                 onClick={() => setTheme(t.id)}
                                                 className={`w-full p-4 rounded-xl border-2 flex items-center gap-4 transition-all hover:bg-gray-50 ${theme === t.id ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'border-gray-100'}`}
                                             >
-                                                <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center text-2xl shadow-sm border border-gray-100">
+                                                <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100">
                                                     {t.icon}
                                                 </div>
                                                 <div className="text-left">
@@ -203,7 +218,7 @@ export default function CreateInvitePage() {
                                             className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${!isPublic ? 'border-primary bg-primary/5' : 'border-gray-100 opacity-60 hover:opacity-100'}`}
                                         >
                                             <div className="flex items-center justify-between mb-2">
-                                                <span className="font-bold text-lg flex items-center gap-2">🔒 Private Lock <span className="text-[10px] bg-primary text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Recommended</span></span>
+                                                <span className="font-bold text-lg flex items-center gap-2 text-foreground"><Lock className="h-5 w-5 text-primary" /> Private Lock <span className="text-[10px] bg-primary text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Secure</span></span>
                                                 {!isPublic && <div className="h-4 w-4 rounded-full bg-primary" />}
                                             </div>
                                             <p className="text-sm text-foreground/80">Only the FIRST person to open the link can respond. Truly exclusive.</p>
@@ -214,7 +229,7 @@ export default function CreateInvitePage() {
                                             className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${isPublic ? 'border-primary bg-primary/5' : 'border-gray-100 opacity-60 hover:opacity-100'}`}
                                         >
                                             <div className="flex items-center justify-between mb-2">
-                                                <span className="font-bold text-lg">🌍 Public Open</span>
+                                                <span className="font-bold text-lg flex items-center gap-2 text-foreground"><Globe className="h-5 w-5 text-muted-foreground" /> Public Open</span>
                                                 {isPublic && <div className="h-4 w-4 rounded-full bg-primary" />}
                                             </div>
                                             <p className="text-sm text-foreground/80">Anyone with the link can respond. Good for group polls or social media.</p>
@@ -237,8 +252,10 @@ export default function CreateInvitePage() {
                                     Next Step
                                 </Button>
                             ) : (
-                                <Button variant="primary" onClick={handleCreate} loading={loading} className="w-40 font-bold shadow-xl shadow-primary/30">
-                                    {loading ? 'Creating...' : 'Launch Invite 🚀'}
+                                <Button variant="primary" onClick={handleCreate} loading={loading} className="w-48 font-bold shadow-xl shadow-primary/30 uppercase tracking-widest text-xs flex items-center gap-2">
+                                    {loading ? 'Initializing...' : (
+                                        <>Deploy Protocol <Send className="h-3.5 w-3.5" /></>
+                                    )}
                                 </Button>
                             )}
                         </div>

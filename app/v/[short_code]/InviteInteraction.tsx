@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { v4 as uuidv4 } from "uuid"
+import { Heart, Zap, Sparkles, ShieldAlert, XCircle, HelpCircle, Inbox, Send, RefreshCw } from "lucide-react"
 
 interface Invite {
     id: string
@@ -52,8 +53,8 @@ export function InviteInteraction({ invite }: Props) {
             secondaryButton: "border-primary/20 text-primary hover:bg-primary/5",
             ghostButton: "text-red-500 hover:bg-red-50",
             bg: "bg-[#fff1f2]",
-            emoji: "💖",
-            noTexts: ["No", "Are you sure?", "Really?", "Last chance... 😅"],
+            emoji: <Heart className="h-6 w-6 text-primary fill-primary" />,
+            noTexts: ["No", "Are you sure?", "Really?", "Reviewing..."],
             yesScaleInc: 0.2,
             confetti: ["#ff4d4d", "#ff8080", "#ffffff"],
             buttonSpeed: 0.4
@@ -64,8 +65,8 @@ export function InviteInteraction({ invite }: Props) {
             secondaryButton: "border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10",
             ghostButton: "text-fuchsia-400 hover:bg-fuchsia-500/10",
             bg: "bg-[#0f172a] rebel-grid",
-            emoji: "⚡",
-            noTexts: ["Nope", "Try again", "Catch me!", "Too slow! 💨"],
+            emoji: <Zap className="h-6 w-6 text-cyan-400 fill-cyan-400" />,
+            noTexts: ["Nope", "Try again", "Catch me!", "Recalibrating..."],
             yesScaleInc: 0.5,
             confetti: ["#06b6d4", "#c026d3", "#ffffff"],
             buttonSpeed: 0.1
@@ -76,8 +77,8 @@ export function InviteInteraction({ invite }: Props) {
             secondaryButton: "border-neutral-800 text-neutral-400 hover:bg-neutral-900",
             ghostButton: "text-neutral-500 hover:bg-neutral-900",
             bg: "bg-neutral-950",
-            emoji: "🖤",
-            noTexts: ["Ugh, no", "In your dreams", "Not ever", "Broken heart? 💔"],
+            emoji: <Sparkles className="h-6 w-6 text-neutral-600" />,
+            noTexts: ["Ugh, no", "In your dreams", "Not ever", "Processing..."],
             yesScaleInc: 0.1,
             confetti: ["#450a0a", "#7f1d1d", "#000000"],
             buttonSpeed: 0.8
@@ -142,7 +143,7 @@ export function InviteInteraction({ invite }: Props) {
             context.fillStyle = '#4b5563'
             context.textAlign = 'center'
             context.textBaseline = 'middle'
-            context.fillText('✨ Scratch to Reveal ✨', width / 2, height / 2)
+            context.fillText('AUTHENTICATE TO REVEAL', width / 2, height / 2)
         }
 
         resize()
@@ -324,7 +325,7 @@ export function InviteInteraction({ invite }: Props) {
 
     const handleSubmitReason = async () => {
         if (!reason.trim()) {
-            setSubmissionError("Please provide a reason or press 'Yes' instead! 💖")
+            setSubmissionError("Please provide a reason or select an affirmative response.")
             return
         }
         await handleResponse('no', reason)
@@ -336,10 +337,14 @@ export function InviteInteraction({ invite }: Props) {
         return (
             <main className="flex min-h-screen items-center justify-center p-4">
                 <Card className="text-center max-w-sm">
-                    <h1 className="font-outfit text-4xl font-bold mb-4">🕵️‍♂️</h1>
+                    <div className="flex justify-center mb-6">
+                        <div className="h-16 w-16 rounded-full bg-amber-50 flex items-center justify-center text-amber-600">
+                            <ShieldAlert className="h-10 w-10" />
+                        </div>
+                    </div>
                     <h2 className="text-xl font-bold text-foreground">Tsk tsk...</h2>
-                    <p className="mt-2 text-muted-foreground italic">
-                        &quot;Nice try, but you&apos;re not the one this link was meant for. 💌&quot;
+                    <p className="mt-2 text-muted-foreground italic text-sm">
+                        &quot;Security active. Access restricted to the intended recipient.&quot;
                     </p>
                 </Card>
             </main>
@@ -355,11 +360,15 @@ export function InviteInteraction({ invite }: Props) {
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ type: "spring" }}
                     >
-                        <h1 className="font-outfit text-4xl font-bold mb-4">💖</h1>
+                        <div className="flex justify-center mb-6">
+                            <div className="h-16 w-16 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+                                <Heart className="h-10 w-10 fill-primary" />
+                            </div>
+                        </div>
                         <h2 className="text-2xl font-bold text-foreground">Response Sent</h2>
                         <p className="mt-2 text-muted-foreground leading-relaxed">
                             {invite.occasion === 'just_because'
-                                ? `Your love has been sent to ${invite.profiles?.display_name || "the sender"}. ❤️`
+                                ? `Your response has been transmitted to ${invite.profiles?.display_name || "the sender"}.`
                                 : `Your answer has been delivered to ${invite.profiles?.display_name || "the sender"}.`
                             }
                         </p>
@@ -370,8 +379,8 @@ export function InviteInteraction({ invite }: Props) {
                                 Join the fun and create your own mischievous invitations for your loved ones.
                             </p>
                             <Link href="/">
-                                <Button variant="primary" className="w-full py-6">
-                                    Create My First Invite 🏹
+                                <Button variant="primary" className="w-full py-6 flex items-center gap-2">
+                                    Initialize My Own Invitation <Send className="h-4 w-4" />
                                 </Button>
                             </Link>
                         </div>
@@ -430,7 +439,7 @@ export function InviteInteraction({ invite }: Props) {
                                     onClick={() => handleResponse('yes')}
                                     loading={loading}
                                 >
-                                    Send Love ❤️
+                                    Send Response <Inbox className="ml-2 h-5 w-5" />
                                 </Button>
 
                                 <Button
@@ -440,7 +449,7 @@ export function InviteInteraction({ invite }: Props) {
                                     onClick={() => handleResponse('no')}
                                     disabled={loading}
                                 >
-                                    Not my vibe 😕
+                                    Decline Invitation <XCircle className="ml-2 h-4 w-4" />
                                 </Button>
 
                                 {submissionError && (
@@ -484,7 +493,7 @@ export function InviteInteraction({ invite }: Props) {
                                     onClick={() => handleResponse('yes')}
                                     loading={loading}
                                 >
-                                    Yes 💖
+                                    Affirmative <Heart className="ml-2 h-5 w-5 fill-current" />
                                 </Button>
                             </motion.div>
 
@@ -496,7 +505,7 @@ export function InviteInteraction({ invite }: Props) {
                                     onClick={() => handleResponse('maybe')}
                                     disabled={loading}
                                 >
-                                    Maybe 🤔
+                                    Neutral <HelpCircle className="ml-2 h-4 w-4" />
                                 </Button>
 
                                 <Button

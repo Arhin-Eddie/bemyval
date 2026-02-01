@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation"
 import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Heart, HelpCircle, XCircle, Eye, Activity } from "lucide-react"
 
 interface Props {
     params: Promise<{ short_code: string }>
@@ -51,9 +51,17 @@ export default async function ResultPage({ params }: Props) {
                 </Link>
 
                 <header className="mb-6 sm:mb-10">
-                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary/60">
-                        The Romantic Details
-                    </span>
+                    <div className="flex items-center gap-4 mb-4">
+                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary/60">
+                            The Engagement Audit
+                        </span>
+                        {invite.opened_at && (
+                            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100/50 text-[10px] font-bold uppercase tracking-wider">
+                                <Eye className="h-3 w-3" />
+                                First Opened: {new Date(invite.opened_at).toLocaleDateString()} at {new Date(invite.opened_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        )}
+                    </div>
                     <h1 className="mt-1 sm:mt-2 font-outfit text-2xl sm:text-4xl font-bold tracking-tight text-foreground">
                         Proposal to: {invite.recipient_name}
                     </h1>
@@ -73,8 +81,8 @@ export default async function ResultPage({ params }: Props) {
                                 <Card key={res.id} className="flex items-center justify-between p-4 sm:p-8 hover:transform hover:scale-[1.01] transition-all border-primary/5 hover:border-primary/20">
                                     <div className="flex items-center gap-3 sm:gap-6">
                                         <div className="relative">
-                                            <div className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl bg-primary/5 text-xl sm:text-2xl shadow-inner">
-                                                {res.answer === 'yes' ? '💖' : res.answer === 'maybe' ? '🤔' : '😅'}
+                                            <div className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl bg-primary/5 text-primary shadow-inner">
+                                                {res.answer === 'yes' ? <Heart className="h-5 w-5 sm:h-7 sm:w-7 fill-primary" /> : res.answer === 'maybe' ? <HelpCircle className="h-5 w-5 sm:h-7 sm:w-7" /> : <XCircle className="h-5 w-5 sm:h-7 sm:w-7 text-red-500" />}
                                             </div>
                                             <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center text-[10px] font-bold">
                                                 {idx + 1}
@@ -114,8 +122,11 @@ export default async function ResultPage({ params }: Props) {
                 </section>
 
                 <section className="mt-12">
-                    <Card className="bg-primary/5 border-primary/20">
-                        <h3 className="font-bold text-primary italic mb-2">Share Your Heart</h3>
+                    <Card className="bg-primary/5 border-primary/20 p-6 sm:p-8">
+                        <div className="flex items-center gap-2 text-primary mb-4">
+                            <Activity className="h-5 w-5" />
+                            <h3 className="font-bold uppercase tracking-widest text-xs">Share Your Proposal</h3>
+                        </div>
                         <p className="text-sm text-foreground mb-4">Send this special link to {invite.recipient_name}:</p>
                         <div className="flex items-center gap-2 overflow-hidden rounded-2xl border border-primary/20 bg-white/80 p-1 pl-4">
                             <code className="text-xs flex-1 truncate font-mono text-primary">

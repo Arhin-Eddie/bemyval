@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { Input } from "@/components/ui/Input"
 import { createClient } from "@/lib/supabase/client"
+import { signup } from "./actions"
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true)
@@ -32,16 +33,16 @@ export default function LoginPage() {
                 })
                 if (error) throw error
             } else {
-                const { error: signUpError } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            display_name: name,
-                        },
-                    },
-                })
-                if (signUpError) throw signUpError
+                const formData = new FormData()
+                formData.append("email", email)
+                formData.append("password", password)
+                formData.append("name", name)
+
+                const result = await signup(formData)
+
+                if (result.error) {
+                    throw new Error(result.error)
+                }
 
                 setShowConfirmation(true)
                 return
